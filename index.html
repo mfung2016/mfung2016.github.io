@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fung Yik Wai Marcus — Portfolio</title>
+  <meta name="description" content="Marcus Fung — BBA student at the University of Hong Kong (Marketing & History). Community operations, PE research, audit and commercial experience.">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-bg: #ffffff;
+      --color-surface: #ffffff;
+      --color-surface-warm: #f6f5f4;
+      --color-text: rgba(0, 0, 0, 0.95);
+      --color-text-secondary: #615d59;
+      --color-text-muted: #a39e98;
+      --color-accent: #0075de;
+      --color-accent-active: #005bab;
+      --color-border: rgba(0, 0, 0, 0.1);
+      --color-badge-bg: #f2f9ff;
+      --color-badge-text: #097fe8;
+      --shadow-card: rgba(0,0,0,0.04) 0px 4px 18px, rgba(0,0,0,0.027) 0px 2.025px 7.84688px, rgba(0,0,0,0.02) 0px 0.8px 2.925px, rgba(0,0,0,0.01) 0px 0.175px 1.04062px;
+      --shadow-deep: rgba(0,0,0,0.01) 0px 1px 3px, rgba(0,0,0,0.02) 0px 3px 7px, rgba(0,0,0,0.02) 0px 7px 15px, rgba(0,0,0,0.04) 0px 14px 28px, rgba(0,0,0,0.05) 0px 23px 52px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', -apple-system, system-ui, 'Segoe UI', Roboto, sans-serif;
+      font-feature-settings: "lnum", "locl";
+      color: var(--color-text);
+      background: var(--color-bg);
+      font-size: 16px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: var(--color-accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    a:focus-visible, button:focus-visible { outline: 2px solid var(--color-badge-text); outline-offset: 2px; }
+
+    .container { max-width: 1000px; margin: 0 auto; padding: 0 24px; }
+
+    /* ---------- Navigation ---------- */
+    header {
+      background: var(--color-bg);
+      border-bottom: 1px solid var(--color-border);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 60px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: -0.25px;
+      color: var(--color-text);
+    }
+    .brand:hover { text-decoration: none; }
+    .brand-mark {
+      width: 30px; height: 30px;
+      border-radius: 6px;
+      background: var(--color-text);
+      color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 700;
+    }
+    .nav-links { display: flex; gap: 28px; align-items: center; }
+    .nav-links a {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--color-text);
+    }
+    .nav-links a:hover { color: var(--color-accent); text-decoration: none; }
+    .btn {
+      display: inline-block;
+      font-size: 15px;
+      font-weight: 600;
+      padding: 8px 16px;
+      border-radius: 4px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: background 0.15s ease, transform 0.1s ease;
+    }
+    .btn-primary { background: var(--color-accent); color: #fff; }
+    .btn-primary:hover { background: var(--color-accent-active); text-decoration: none; }
+    .btn-primary:active { transform: scale(0.97); }
+    .btn-secondary { background: rgba(0,0,0,0.05); color: var(--color-text); }
+    .btn-secondary:hover { background: rgba(0,0,0,0.08); text-decoration: none; }
+    .nav-toggle { display: none; background: none; border: none; font-size: 22px; cursor: pointer; color: var(--color-text); }
+
+    /* ---------- Hero ---------- */
+    .hero { padding: 96px 0 80px; }
+    .badge {
+      display: inline-block;
+      background: var(--color-badge-bg);
+      color: var(--color-badge-text);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.125px;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      margin-bottom: 24px;
+    }
+    .hero h1 {
+      font-size: 64px;
+      font-weight: 700;
+      line-height: 1.0;
+      letter-spacing: -2.125px;
+      color: var(--color-text);
+      margin-bottom: 24px;
+    }
+    .hero .lede {
+      font-size: 20px;
+      font-weight: 500;
+      line-height: 1.4;
+      color: var(--color-text-secondary);
+      max-width: 640px;
+      margin-bottom: 32px;
+    }
+    .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+    .hero-meta {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      margin-top: 48px;
+      padding-top: 32px;
+      border-top: 1px solid var(--color-border);
+      color: var(--color-text-secondary);
+      font-size: 14px;
+    }
+    .hero-meta strong { display: block; color: var(--color-text); font-size: 24px; font-weight: 700; letter-spacing: -0.5px; }
+
+    /* ---------- Sections ---------- */
+    section { padding: 80px 0; }
+    section.warm { background: var(--color-surface-warm); }
+    .section-label {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.125px;
+      text-transform: uppercase;
+      color: var(--color-text-muted);
+      margin-bottom: 12px;
+    }
+    .section-title {
+      font-size: 48px;
+      font-weight: 700;
+      line-height: 1.0;
+      letter-spacing: -1.5px;
+      margin-bottom: 40px;
+    }
+
+    /* ---------- Cards ---------- */
+    .card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      box-shadow: var(--shadow-card);
+      padding: 28px;
+      transition: box-shadow 0.2s ease, transform 0.2s ease;
+    }
+    .card:hover { transform: translateY(-2px); box-shadow: var(--shadow-deep); }
+
+    .grid { display: grid; gap: 20px; }
+    .grid-2 { grid-template-columns: repeat(2, 1fr); }
+
+    /* ---------- Experience ---------- */
+    .exp-list { display: flex; flex-direction: column; gap: 20px; }
+    .exp-card .exp-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; margin-bottom: 6px; }
+    .exp-card h3 { font-size: 22px; font-weight: 700; letter-spacing: -0.25px; line-height: 1.27; }
+    .exp-card .role { font-size: 16px; font-weight: 500; color: var(--color-accent); margin-bottom: 14px; }
+    .exp-card .date { font-size: 14px; font-weight: 500; color: var(--color-text-muted); white-space: nowrap; }
+    .exp-card ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .exp-card li { position: relative; padding-left: 18px; color: var(--color-text-secondary); font-size: 16px; line-height: 1.5; }
+    .exp-card li::before { content: ""; position: absolute; left: 0; top: 10px; width: 6px; height: 6px; border-radius: 50%; background: var(--color-text-muted); }
+
+    /* ---------- Education ---------- */
+    .edu-card h3 { font-size: 22px; font-weight: 700; letter-spacing: -0.25px; margin-bottom: 6px; }
+    .edu-card .degree { color: var(--color-text-secondary); margin-bottom: 4px; }
+    .edu-card .date { font-size: 14px; color: var(--color-text-muted); }
+
+    /* ---------- Competitions / quals ---------- */
+    .item h3 { font-size: 18px; font-weight: 700; letter-spacing: -0.2px; margin-bottom: 8px; }
+    .item p { color: var(--color-text-secondary); font-size: 15px; }
+
+    .qual-list { display: flex; flex-direction: column; gap: 16px; }
+    .qual-row { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding-bottom: 16px; border-bottom: 1px solid var(--color-border); }
+    .qual-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .qual-row .q-name { font-weight: 600; }
+    .qual-row .q-detail { color: var(--color-text-secondary); font-size: 15px; }
+
+    /* ---------- Skills ---------- */
+    .skill-group h3 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.125px;
+      margin-bottom: 14px;
+    }
+    .tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag {
+      background: rgba(0,0,0,0.05);
+      color: var(--color-text);
+      font-size: 14px;
+      font-weight: 500;
+      padding: 5px 12px;
+      border-radius: 9999px;
+    }
+
+    /* ---------- Contact / footer ---------- */
+    .contact-card { text-align: center; padding: 56px 32px; box-shadow: var(--shadow-deep); border-radius: 16px; }
+    .contact-card h2 { font-size: 40px; font-weight: 700; letter-spacing: -1.25px; line-height: 1.1; margin-bottom: 12px; }
+    .contact-card p { color: var(--color-text-secondary); font-size: 18px; margin-bottom: 28px; }
+    .contact-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+    footer { border-top: 1px solid var(--color-border); padding: 32px 0; }
+    .footer-inner { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; font-size: 14px; color: var(--color-text-muted); }
+
+    /* ---------- Responsive ---------- */
+    @media (max-width: 768px) {
+      .nav-links { display: none; position: absolute; top: 60px; left: 0; right: 0; background: var(--color-bg); border-bottom: 1px solid var(--color-border); flex-direction: column; align-items: flex-start; gap: 0; padding: 8px 24px 16px; }
+      .nav-links.open { display: flex; }
+      .nav-links a { padding: 10px 0; width: 100%; }
+      .nav-toggle { display: block; }
+      .hero { padding: 64px 0 56px; }
+      .hero h1 { font-size: 40px; letter-spacing: -1.3px; }
+      .section-title { font-size: 32px; letter-spacing: -1px; }
+      section { padding: 56px 0; }
+      .grid-2 { grid-template-columns: 1fr; }
+      .contact-card h2 { font-size: 28px; letter-spacing: -0.8px; }
+      .exp-card .exp-head { flex-direction: column; gap: 4px; }
+    }
+    @media (max-width: 400px) {
+      .hero h1 { font-size: 32px; letter-spacing: -1px; }
+      .hero-meta strong { font-size: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="container nav">
+    <a href="#" class="brand">
+      <span class="brand-mark">MF</span>
+      Marcus Fung
+    </a>
+    <nav class="nav-links" id="navLinks">
+      <a href="#experience">Experience</a>
+      <a href="#education">Education</a>
+      <a href="#achievements">Achievements</a>
+      <a href="#skills">Skills</a>
+      <a href="#contact" class="btn btn-primary">Get in touch</a>
+    </nav>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">☰</button>
+  </div>
+</header>
+
+<main>
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container">
+      <span class="badge">Open to internships · 2026–27</span>
+      <h1>Fung Yik Wai<br>Marcus</h1>
+      <p class="lede">BBA student at the University of Hong Kong, majoring in Marketing and History. I've built community operations at NetEase Games, done private equity research, audited at KPMG, and analysed commercial strategy at Hutchison Ports.</p>
+      <div class="hero-actions">
+        <a href="#experience" class="btn btn-primary">View my experience</a>
+        <a href="#contact" class="btn btn-secondary">Contact me</a>
+      </div>
+      <div class="hero-meta">
+        <div><strong>4</strong> internships across gaming, PE, audit &amp; ports</div>
+        <div><strong>IELTS 8.0</strong> English · Cantonese · Mandarin</div>
+        <div><strong>Jul 2027</strong> Expected graduation, HKU</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Experience -->
+  <section id="experience" class="warm">
+    <div class="container">
+      <div class="section-label">Work</div>
+      <h2 class="section-title">Experience</h2>
+      <div class="exp-list">
+
+        <article class="card exp-card">
+          <div class="exp-head">
+            <h3>NetEase Games</h3>
+            <span class="date">May 2026 – Aug 2026</span>
+          </div>
+          <div class="role">Discord Community Operations Intern</div>
+          <ul>
+            <li>Designed community events and joint campaigns across Discord and Reddit, driving 10% QoQ growth in active Discord users.</li>
+            <li>Restructured event cadence, role permissions, and AMA streams, doubling community event participation rates.</li>
+            <li>Remodelled the community sentiment feedback loop, feeding player experience insights to product teams to inform post-launch iteration roadmaps.</li>
+          </ul>
+        </article>
+
+        <article class="card exp-card">
+          <div class="exp-head">
+            <h3>Bricks and Mortar Management</h3>
+            <span class="date">Jul 2025 – Aug 2025</span>
+          </div>
+          <div class="role">Private Equity Research Intern</div>
+          <ul>
+            <li>Modernised the company Housing Authority database, streamlining investment workflows and cutting analyst data-retrieval time by ~30%.</li>
+            <li>Published publicly released macroeconomic reports tracking China's residential real estate sector to support internal investment due diligence.</li>
+          </ul>
+        </article>
+
+        <article class="card exp-card">
+          <div class="exp-head">
+            <h3>KPMG China</h3>
+            <span class="date">Jul 2024 – Aug 2024</span>
+          </div>
+          <div class="role">Audit Intern</div>
+          <ul>
+            <li>Performed on-site transaction sampling, verifying 200+ client ledger entries and flagging financial-reporting anomalies for audit teams.</li>
+            <li>Conducted rigorous quality checks and error verification on draft interim financial statements.</li>
+          </ul>
+        </article>
+
+        <article class="card exp-card">
+          <div class="exp-head">
+            <h3>Hutchison Ports</h3>
+            <span class="date">Jun 2024 – Jul 2024</span>
+          </div>
+          <div class="role">Commercial Intern</div>
+          <ul>
+            <li>Evaluated BYD's Roll-on/Roll-off (Ro-Ro) shipping model to help management assess shifts in container-volume demand.</li>
+            <li>Researched global port decarbonization trends and green-shipping corridors to identify commercial adaptation pathways.</li>
+          </ul>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Education -->
+  <section id="education">
+    <div class="container">
+      <div class="section-label">Background</div>
+      <h2 class="section-title">Education</h2>
+      <div class="grid grid-2">
+        <div class="card edu-card">
+          <h3>The University of Hong Kong</h3>
+          <div class="degree">Bachelor of Business Administration — Major in Marketing and History</div>
+          <div class="date">Sept 2023 – Jul 2027 (expected)</div>
+        </div>
+        <div class="card edu-card">
+          <h3>HKDSE 2023</h3>
+          <div class="degree">English Language 5** · Mathematics 5 · Business, Accounting &amp; Financial Studies · Liberal Studies</div>
+          <div class="date">Hong Kong Diploma of Secondary Education</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Achievements -->
+  <section id="achievements" class="warm">
+    <div class="container">
+      <div class="section-label">Beyond the classroom</div>
+      <h2 class="section-title">Competitions &amp; Qualifications</h2>
+      <div class="grid grid-2">
+        <div class="card item">
+          <h3>HKGCI Corporate Governance Paper Competition</h3>
+          <p>2025 — Authored a research paper on ESG governance.</p>
+        </div>
+        <div class="card item">
+          <h3>BAM Stock Pitch Challenge</h3>
+          <p>2025 — Produced institutional-grade equity research, including DCF / comparable-company valuation and a formal investment thesis.</p>
+        </div>
+        <div class="card item">
+          <h3>IELTS</h3>
+          <p>Overall Band Score 8.0.</p>
+        </div>
+        <div class="card item">
+          <h3>HKDSE 2023</h3>
+          <p>English Language 5**, Mathematics 5, BAFS, Liberal Studies.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Skills -->
+  <section id="skills">
+    <div class="container">
+      <div class="section-label">Toolkit</div>
+      <h2 class="section-title">Skills</h2>
+      <div class="grid grid-2">
+        <div class="card skill-group">
+          <h3>Languages</h3>
+          <div class="tags">
+            <span class="tag">English (Native)</span>
+            <span class="tag">Cantonese (Native)</span>
+            <span class="tag">Mandarin (Working)</span>
+          </div>
+        </div>
+        <div class="card skill-group">
+          <h3>Data &amp; Analytics</h3>
+          <div class="tags">
+            <span class="tag">Excel</span>
+            <span class="tag">Bloomberg Terminal</span>
+          </div>
+        </div>
+        <div class="card skill-group">
+          <h3>Office &amp; Design</h3>
+          <div class="tags">
+            <span class="tag">Canva</span>
+            <span class="tag">PowerPoint</span>
+          </div>
+        </div>
+        <div class="card skill-group">
+          <h3>AI Tools</h3>
+          <div class="tags">
+            <span class="tag">ChatGPT</span>
+            <span class="tag">Copilot</span>
+            <span class="tag">Perplexity</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section id="contact" class="warm">
+    <div class="container">
+      <div class="card contact-card">
+        <h2>Let's talk</h2>
+        <p>Open to internships and opportunities from July 2027 onwards.</p>
+        <div class="contact-actions">
+          <a href="mailto:mfung2016@gmail.com" class="btn btn-primary">mfung2016@gmail.com</a>
+          <a href="tel:+85292427474" class="btn btn-secondary">+852 9242 7474</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="container footer-inner">
+    <span>© 2026 Fung Yik Wai Marcus</span>
+    <span>Designed with the Notion design language</span>
+  </div>
+</footer>
+
+<script>
+  const toggle = document.getElementById('navToggle');
+  const links = document.getElementById('navLinks');
+  toggle.addEventListener('click', () => {
+    const open = links.classList.toggle('open');
+    toggle.setAttribute('aria-expanded', open);
+  });
+  links.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    links.classList.remove('open');
+    toggle.setAttribute('aria-expanded', 'false');
+  }));
+</script>
+
+</body>
+</html>
