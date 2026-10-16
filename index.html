@@ -1,470 +1,991 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fung Yik Wai Marcus — Portfolio</title>
-  <meta name="description" content="Marcus Fung — BBA student at the University of Hong Kong (Marketing & History). Community operations, PE research, audit and commercial experience.">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --color-bg: #ffffff;
-      --color-surface: #ffffff;
-      --color-surface-warm: #f6f5f4;
-      --color-text: rgba(0, 0, 0, 0.95);
-      --color-text-secondary: #615d59;
-      --color-text-muted: #a39e98;
-      --color-accent: #0075de;
-      --color-accent-active: #005bab;
-      --color-border: rgba(0, 0, 0, 0.1);
-      --color-badge-bg: #f2f9ff;
-      --color-badge-text: #097fe8;
-      --shadow-card: rgba(0,0,0,0.04) 0px 4px 18px, rgba(0,0,0,0.027) 0px 2.025px 7.84688px, rgba(0,0,0,0.02) 0px 0.8px 2.925px, rgba(0,0,0,0.01) 0px 0.175px 1.04062px;
-      --shadow-deep: rgba(0,0,0,0.01) 0px 1px 3px, rgba(0,0,0,0.02) 0px 3px 7px, rgba(0,0,0,0.02) 0px 7px 15px, rgba(0,0,0,0.04) 0px 14px 28px, rgba(0,0,0,0.05) 0px 23px 52px;
-    }
-
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      font-family: 'Inter', -apple-system, system-ui, 'Segoe UI', Roboto, sans-serif;
-      font-feature-settings: "lnum", "locl";
-      color: var(--color-text);
-      background: var(--color-bg);
-      font-size: 16px;
-      line-height: 1.5;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    a { color: var(--color-accent); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-    a:focus-visible, button:focus-visible { outline: 2px solid var(--color-badge-text); outline-offset: 2px; }
-
-    .container { max-width: 1000px; margin: 0 auto; padding: 0 24px; }
-
-    /* ---------- Navigation ---------- */
-    header {
-      background: var(--color-bg);
-      border-bottom: 1px solid var(--color-border);
-      position: sticky;
-      top: 0;
-      z-index: 50;
-    }
-    .nav {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 60px;
-    }
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 700;
-      font-size: 15px;
-      letter-spacing: -0.25px;
-      color: var(--color-text);
-    }
-    .brand:hover { text-decoration: none; }
-    .brand-mark {
-      width: 30px; height: 30px;
-      border-radius: 6px;
-      background: var(--color-text);
-      color: #fff;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 14px; font-weight: 700;
-    }
-    .nav-links { display: flex; gap: 28px; align-items: center; }
-    .nav-links a {
-      font-size: 15px;
-      font-weight: 500;
-      color: var(--color-text);
-    }
-    .nav-links a:hover { color: var(--color-accent); text-decoration: none; }
-    .btn {
-      display: inline-block;
-      font-size: 15px;
-      font-weight: 600;
-      padding: 8px 16px;
-      border-radius: 4px;
-      border: 1px solid transparent;
-      cursor: pointer;
-      transition: background 0.15s ease, transform 0.1s ease;
-    }
-    .btn-primary { background: var(--color-accent); color: #fff; }
-    .btn-primary:hover { background: var(--color-accent-active); text-decoration: none; }
-    .btn-primary:active { transform: scale(0.97); }
-    .btn-secondary { background: rgba(0,0,0,0.05); color: var(--color-text); }
-    .btn-secondary:hover { background: rgba(0,0,0,0.08); text-decoration: none; }
-    .nav-toggle { display: none; background: none; border: none; font-size: 22px; cursor: pointer; color: var(--color-text); }
-
-    /* ---------- Hero ---------- */
-    .hero { padding: 96px 0 80px; }
-    .badge {
-      display: inline-block;
-      background: var(--color-badge-bg);
-      color: var(--color-badge-text);
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: 0.125px;
-      padding: 4px 10px;
-      border-radius: 9999px;
-      margin-bottom: 24px;
-    }
-    .hero h1 {
-      font-size: 64px;
-      font-weight: 700;
-      line-height: 1.0;
-      letter-spacing: -2.125px;
-      color: var(--color-text);
-      margin-bottom: 24px;
-    }
-    .hero .lede {
-      font-size: 20px;
-      font-weight: 500;
-      line-height: 1.4;
-      color: var(--color-text-secondary);
-      max-width: 640px;
-      margin-bottom: 32px;
-    }
-    .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
-    .hero-meta {
-      display: flex;
-      gap: 24px;
-      flex-wrap: wrap;
-      margin-top: 48px;
-      padding-top: 32px;
-      border-top: 1px solid var(--color-border);
-      color: var(--color-text-secondary);
-      font-size: 14px;
-    }
-    .hero-meta strong { display: block; color: var(--color-text); font-size: 24px; font-weight: 700; letter-spacing: -0.5px; }
-
-    /* ---------- Sections ---------- */
-    section { padding: 80px 0; }
-    section.warm { background: var(--color-surface-warm); }
-    .section-label {
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: 0.125px;
-      text-transform: uppercase;
-      color: var(--color-text-muted);
-      margin-bottom: 12px;
-    }
-    .section-title {
-      font-size: 48px;
-      font-weight: 700;
-      line-height: 1.0;
-      letter-spacing: -1.5px;
-      margin-bottom: 40px;
-    }
-
-    /* ---------- Cards ---------- */
-    .card {
-      background: var(--color-surface);
-      border: 1px solid var(--color-border);
-      border-radius: 12px;
-      box-shadow: var(--shadow-card);
-      padding: 28px;
-      transition: box-shadow 0.2s ease, transform 0.2s ease;
-    }
-    .card:hover { transform: translateY(-2px); box-shadow: var(--shadow-deep); }
-
-    .grid { display: grid; gap: 20px; }
-    .grid-2 { grid-template-columns: repeat(2, 1fr); }
-
-    /* ---------- Experience ---------- */
-    .exp-list { display: flex; flex-direction: column; gap: 20px; }
-    .exp-card .exp-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; margin-bottom: 6px; }
-    .exp-card h3 { font-size: 22px; font-weight: 700; letter-spacing: -0.25px; line-height: 1.27; }
-    .exp-card .role { font-size: 16px; font-weight: 500; color: var(--color-accent); margin-bottom: 14px; }
-    .exp-card .date { font-size: 14px; font-weight: 500; color: var(--color-text-muted); white-space: nowrap; }
-    .exp-card ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
-    .exp-card li { position: relative; padding-left: 18px; color: var(--color-text-secondary); font-size: 16px; line-height: 1.5; }
-    .exp-card li::before { content: ""; position: absolute; left: 0; top: 10px; width: 6px; height: 6px; border-radius: 50%; background: var(--color-text-muted); }
-
-    /* ---------- Education ---------- */
-    .edu-card h3 { font-size: 22px; font-weight: 700; letter-spacing: -0.25px; margin-bottom: 6px; }
-    .edu-card .degree { color: var(--color-text-secondary); margin-bottom: 4px; }
-    .edu-card .date { font-size: 14px; color: var(--color-text-muted); }
-
-    /* ---------- Competitions / quals ---------- */
-    .item h3 { font-size: 18px; font-weight: 700; letter-spacing: -0.2px; margin-bottom: 8px; }
-    .item p { color: var(--color-text-secondary); font-size: 15px; }
-
-    .qual-list { display: flex; flex-direction: column; gap: 16px; }
-    .qual-row { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding-bottom: 16px; border-bottom: 1px solid var(--color-border); }
-    .qual-row:last-child { border-bottom: none; padding-bottom: 0; }
-    .qual-row .q-name { font-weight: 600; }
-    .qual-row .q-detail { color: var(--color-text-secondary); font-size: 15px; }
-
-    /* ---------- Skills ---------- */
-    .skill-group h3 {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--color-text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.125px;
-      margin-bottom: 14px;
-    }
-    .tags { display: flex; flex-wrap: wrap; gap: 8px; }
-    .tag {
-      background: rgba(0,0,0,0.05);
-      color: var(--color-text);
-      font-size: 14px;
-      font-weight: 500;
-      padding: 5px 12px;
-      border-radius: 9999px;
-    }
-
-    /* ---------- Contact / footer ---------- */
-    .contact-card { text-align: center; padding: 56px 32px; box-shadow: var(--shadow-deep); border-radius: 16px; }
-    .contact-card h2 { font-size: 40px; font-weight: 700; letter-spacing: -1.25px; line-height: 1.1; margin-bottom: 12px; }
-    .contact-card p { color: var(--color-text-secondary); font-size: 18px; margin-bottom: 28px; }
-    .contact-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-
-    footer { border-top: 1px solid var(--color-border); padding: 32px 0; }
-    .footer-inner { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; font-size: 14px; color: var(--color-text-muted); }
-
-    /* ---------- Responsive ---------- */
-    @media (max-width: 768px) {
-      .nav-links { display: none; position: absolute; top: 60px; left: 0; right: 0; background: var(--color-bg); border-bottom: 1px solid var(--color-border); flex-direction: column; align-items: flex-start; gap: 0; padding: 8px 24px 16px; }
-      .nav-links.open { display: flex; }
-      .nav-links a { padding: 10px 0; width: 100%; }
-      .nav-toggle { display: block; }
-      .hero { padding: 64px 0 56px; }
-      .hero h1 { font-size: 40px; letter-spacing: -1.3px; }
-      .section-title { font-size: 32px; letter-spacing: -1px; }
-      section { padding: 56px 0; }
-      .grid-2 { grid-template-columns: 1fr; }
-      .contact-card h2 { font-size: 28px; letter-spacing: -0.8px; }
-      .exp-card .exp-head { flex-direction: column; gap: 4px; }
-    }
-    @media (max-width: 400px) {
-      .hero h1 { font-size: 32px; letter-spacing: -1px; }
-      .hero-meta strong { font-size: 20px; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dungeon Boss 地城霸主</title>
+<style>
+  html,body{margin:0;padding:0;background:#0a0812;height:100%;overflow:hidden;
+    display:flex;align-items:center;justify-content:center;
+    font-family:"Segoe UI",system-ui,sans-serif;}
+  #game{max-width:100vw;max-height:100vh;
+    box-shadow:0 0 70px rgba(120,60,255,.28);border-radius:6px;cursor:crosshair;}
+</style>
 </head>
 <body>
-
-<header>
-  <div class="container nav">
-    <a href="#" class="brand">
-      <span class="brand-mark">MF</span>
-      Marcus Fung
-    </a>
-    <nav class="nav-links" id="navLinks">
-      <a href="#experience">Experience</a>
-      <a href="#education">Education</a>
-      <a href="#achievements">Achievements</a>
-      <a href="#skills">Skills</a>
-      <a href="#contact" class="btn btn-primary">Get in touch</a>
-    </nav>
-    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">☰</button>
-  </div>
-</header>
-
-<main>
-  <!-- Hero -->
-  <section class="hero">
-    <div class="container">
-      <span class="badge">Open to internships · 2026–27</span>
-      <h1>Fung Yik Wai<br>Marcus</h1>
-      <p class="lede">BBA student at the University of Hong Kong, majoring in Marketing and History. I've built community operations at NetEase Games, done private equity research, audited at KPMG, and analysed commercial strategy at Hutchison Ports.</p>
-      <div class="hero-actions">
-        <a href="#experience" class="btn btn-primary">View my experience</a>
-        <a href="#contact" class="btn btn-secondary">Contact me</a>
-      </div>
-      <div class="hero-meta">
-        <div><strong>4</strong> internships across gaming, PE, audit &amp; ports</div>
-        <div><strong>IELTS 8.0</strong> English · Cantonese · Mandarin</div>
-        <div><strong>Jul 2027</strong> Expected graduation, HKU</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Experience -->
-  <section id="experience" class="warm">
-    <div class="container">
-      <div class="section-label">Work</div>
-      <h2 class="section-title">Experience</h2>
-      <div class="exp-list">
-
-        <article class="card exp-card">
-          <div class="exp-head">
-            <h3>NetEase Games</h3>
-            <span class="date">May 2026 – Aug 2026</span>
-          </div>
-          <div class="role">Discord Community Operations Intern</div>
-          <ul>
-            <li>Designed community events and joint campaigns across Discord and Reddit, driving 10% QoQ growth in active Discord users.</li>
-            <li>Restructured event cadence, role permissions, and AMA streams, doubling community event participation rates.</li>
-            <li>Remodelled the community sentiment feedback loop, feeding player experience insights to product teams to inform post-launch iteration roadmaps.</li>
-          </ul>
-        </article>
-
-        <article class="card exp-card">
-          <div class="exp-head">
-            <h3>Bricks and Mortar Management</h3>
-            <span class="date">Jul 2025 – Aug 2025</span>
-          </div>
-          <div class="role">Private Equity Research Intern</div>
-          <ul>
-            <li>Modernised the company Housing Authority database, streamlining investment workflows and cutting analyst data-retrieval time by ~30%.</li>
-            <li>Published publicly released macroeconomic reports tracking China's residential real estate sector to support internal investment due diligence.</li>
-          </ul>
-        </article>
-
-        <article class="card exp-card">
-          <div class="exp-head">
-            <h3>KPMG China</h3>
-            <span class="date">Jul 2024 – Aug 2024</span>
-          </div>
-          <div class="role">Audit Intern</div>
-          <ul>
-            <li>Performed on-site transaction sampling, verifying 200+ client ledger entries and flagging financial-reporting anomalies for audit teams.</li>
-            <li>Conducted rigorous quality checks and error verification on draft interim financial statements.</li>
-          </ul>
-        </article>
-
-        <article class="card exp-card">
-          <div class="exp-head">
-            <h3>Hutchison Ports</h3>
-            <span class="date">Jun 2024 – Jul 2024</span>
-          </div>
-          <div class="role">Commercial Intern</div>
-          <ul>
-            <li>Evaluated BYD's Roll-on/Roll-off (Ro-Ro) shipping model to help management assess shifts in container-volume demand.</li>
-            <li>Researched global port decarbonization trends and green-shipping corridors to identify commercial adaptation pathways.</li>
-          </ul>
-        </article>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- Education -->
-  <section id="education">
-    <div class="container">
-      <div class="section-label">Background</div>
-      <h2 class="section-title">Education</h2>
-      <div class="grid grid-2">
-        <div class="card edu-card">
-          <h3>The University of Hong Kong</h3>
-          <div class="degree">Bachelor of Business Administration — Major in Marketing and History</div>
-          <div class="date">Sept 2023 – Jul 2027 (expected)</div>
-        </div>
-        <div class="card edu-card">
-          <h3>HKDSE 2023</h3>
-          <div class="degree">English Language 5** · Mathematics 5 · Business, Accounting &amp; Financial Studies · Liberal Studies</div>
-          <div class="date">Hong Kong Diploma of Secondary Education</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Achievements -->
-  <section id="achievements" class="warm">
-    <div class="container">
-      <div class="section-label">Beyond the classroom</div>
-      <h2 class="section-title">Competitions &amp; Qualifications</h2>
-      <div class="grid grid-2">
-        <div class="card item">
-          <h3>HKGCI Corporate Governance Paper Competition</h3>
-          <p>2025 — Authored a research paper on ESG governance.</p>
-        </div>
-        <div class="card item">
-          <h3>BAM Stock Pitch Challenge</h3>
-          <p>2025 — Produced institutional-grade equity research, including DCF / comparable-company valuation and a formal investment thesis.</p>
-        </div>
-        <div class="card item">
-          <h3>IELTS</h3>
-          <p>Overall Band Score 8.0.</p>
-        </div>
-        <div class="card item">
-          <h3>HKDSE 2023</h3>
-          <p>English Language 5**, Mathematics 5, BAFS, Liberal Studies.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Skills -->
-  <section id="skills">
-    <div class="container">
-      <div class="section-label">Toolkit</div>
-      <h2 class="section-title">Skills</h2>
-      <div class="grid grid-2">
-        <div class="card skill-group">
-          <h3>Languages</h3>
-          <div class="tags">
-            <span class="tag">English (Native)</span>
-            <span class="tag">Cantonese (Native)</span>
-            <span class="tag">Mandarin (Working)</span>
-          </div>
-        </div>
-        <div class="card skill-group">
-          <h3>Data &amp; Analytics</h3>
-          <div class="tags">
-            <span class="tag">Excel</span>
-            <span class="tag">Bloomberg Terminal</span>
-          </div>
-        </div>
-        <div class="card skill-group">
-          <h3>Office &amp; Design</h3>
-          <div class="tags">
-            <span class="tag">Canva</span>
-            <span class="tag">PowerPoint</span>
-          </div>
-        </div>
-        <div class="card skill-group">
-          <h3>AI Tools</h3>
-          <div class="tags">
-            <span class="tag">ChatGPT</span>
-            <span class="tag">Copilot</span>
-            <span class="tag">Perplexity</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Contact -->
-  <section id="contact" class="warm">
-    <div class="container">
-      <div class="card contact-card">
-        <h2>Let's talk</h2>
-        <p>Open to internships and opportunities from July 2027 onwards.</p>
-        <div class="contact-actions">
-          <a href="mailto:mfung2016@gmail.com" class="btn btn-primary">mfung2016@gmail.com</a>
-          <a href="tel:+85292427474" class="btn btn-secondary">+852 9242 7474</a>
-        </div>
-      </div>
-    </div>
-  </section>
-</main>
-
-<footer>
-  <div class="container footer-inner">
-    <span>© 2026 Fung Yik Wai Marcus</span>
-    <span>Designed with the Notion design language</span>
-  </div>
-</footer>
-
+<canvas id="game" width="960" height="704"></canvas>
 <script>
-  const toggle = document.getElementById('navToggle');
-  const links = document.getElementById('navLinks');
-  toggle.addEventListener('click', () => {
-    const open = links.classList.toggle('open');
-    toggle.setAttribute('aria-expanded', open);
-  });
-  links.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
-    links.classList.remove('open');
-    toggle.setAttribute('aria-expanded', 'false');
-  }));
-</script>
+'use strict';
+/* ============================================================
+   DUNGEON BOSS — reverse tower defence
+   You are the dungeon. Heroes pathfind to your vault.
+   Place traps, break their path, survive 12 waves.
+   ============================================================ */
 
+window.__errors = [];
+window.addEventListener('error', e => window.__errors.push(e.message));
+
+// ---------- canvas ----------
+const cvs = document.getElementById('game');
+const ctx = cvs.getContext('2d');
+const TILE = 48, COLS = 20, ROWS = 12, HUD_H = 48, PAL_H = 80;
+const W = COLS * TILE;                 // 960
+const H = HUD_H + ROWS * TILE + PAL_H; // 704
+cvs.width = W; cvs.height = H;
+const OY = HUD_H;
+const ENTRANCE = {x:0, y:6}, EXIT = {x:COLS-1, y:6};
+const DIRS = [[1,0],[-1,0],[0,1],[0,-1]];
+const TAU = Math.PI * 2;
+
+// ---------- helpers ----------
+const clampi = (v,a,b) => v<a?a:(v>b?b:v);
+const idxOf = (x,y) => y*COLS+x;
+const cxOf = i => ((i%COLS)+0.5)*TILE;
+const cyOf = i => (Math.floor(i/COLS)+0.5)*TILE + OY;
+function rr(x,y,w,h,r){ ctx.beginPath(); ctx.moveTo(x+r,y);
+  ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+
+// ---------- audio ----------
+let actx = null;
+function audio(){ if(!actx){ try{ actx = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } return actx; }
+function tone(f1,f2,dur,type,vol){
+  const a = audio(); if(!a) return;
+  const o = a.createOscillator(), g = a.createGain();
+  o.type = type||'square'; o.frequency.setValueAtTime(f1,a.currentTime);
+  if(f2) o.frequency.exponentialRampToValueAtTime(Math.max(30,f2), a.currentTime+dur);
+  g.gain.setValueAtTime(vol||0.05, a.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.0001, a.currentTime+dur);
+  o.connect(g); g.connect(a.destination); o.start(); o.stop(a.currentTime+dur);
+}
+const sPlace  = () => tone(420,700,0.10,'square',0.05);
+const sShoot  = () => tone(900,300,0.07,'sawtooth',0.035);
+const sHit    = () => tone(240,120,0.05,'square',0.03);
+const sKill   = () => tone(500,900,0.13,'triangle',0.055);
+const sError  = () => tone(150,90,0.15,'sawtooth',0.05);
+const sLife   = () => tone(320,70,0.4,'sawtooth',0.07);
+const sHorn   = () => { tone(220,220,0.25,'sawtooth',0.05); setTimeout(()=>tone(330,330,0.3,'sawtooth',0.05),140); };
+const sWin    = () => { [523,659,784,1047].forEach((f,i)=>setTimeout(()=>tone(f,f,0.22,'triangle',0.06), i*130)); };
+const sLose   = () => { [392,311,233,165].forEach((f,i)=>setTimeout(()=>tone(f,f,0.3,'sawtooth',0.06), i*180)); };
+
+// ---------- config ----------
+const DIFF = [
+  {name:'Squire',  cn:'新手', hp:0.80, gold:140, mult:1.0},
+  {name:'Knight',  cn:'骑士', hp:1.00, gold:120, mult:1.3},
+  {name:'Overlord',cn:'霸主', hp:1.35, gold:100, mult:1.7},
+];
+const TRAPS = {
+  spikes: {name:'Spikes',    cn:'尖刺', cost:20, hp:70,  walk:true,  dot:12, tick:0.4, key:'1', color:'#c9d1e0'},
+  lava:   {name:'Lava',      cn:'熔岩', cost:35, hp:60,  walk:true,  dot:16, tick:0.4, slow:true, key:'2', color:'#ff7a1a'},
+  turret: {name:'Ballista',  cn:'弩炮', cost:45, hp:40,  walk:false, range:4.4, rate:1.1, dmg:15, key:'3', color:'#c8874a'},
+  wall:   {name:'Barricade', cn:'路障', cost:15, hp:90,  walk:false, key:'4', color:'#7a6248'},
+};
+const ORDER = ['spikes','lava','turret','wall'];
+const HEROES = {
+  squire: {hp:70,  spd:66,  armor:0, reward:8,  color:'#4f8ef7', size:13, dmgTrap:10},
+  rogue:  {hp:45,  spd:112, armor:0, reward:9,  color:'#a55eea', size:11, dmgTrap:8,  trapResist:0.5},
+  knight: {hp:180, spd:50,  armor:4, reward:14, color:'#9aa4c0', size:15, dmgTrap:15},
+  healer: {hp:90,  spd:58,  armor:0, reward:16, color:'#5ad19a', size:13, dmgTrap:6,  healer:true},
+  boss:   {hp:1500,spd:44,  armor:6, reward:120,color:'#e84c4c', size:26, dmgTrap:28, boss:true},
+};
+const WAVES = [
+  [{t:'squire',n:5,gap:1.1}],
+  [{t:'squire',n:7,gap:0.9}],
+  [{t:'squire',n:6,gap:0.9},{t:'rogue',n:3,gap:1.4}],
+  [{t:'knight',n:3,gap:1.7},{t:'squire',n:6,gap:0.8}],
+  [{t:'rogue',n:6,gap:0.7},{t:'healer',n:2,gap:2.0}],
+  [{t:'knight',n:5,gap:1.2},{t:'squire',n:8,gap:0.6}],
+  [{t:'healer',n:3,gap:1.5},{t:'rogue',n:8,gap:0.55}],
+  [{t:'knight',n:7,gap:1.0},{t:'healer',n:3,gap:1.5}],
+  [{t:'rogue',n:12,gap:0.4},{t:'knight',n:5,gap:1.0}],
+  [{t:'squire',n:14,gap:0.35},{t:'healer',n:4,gap:1.2},{t:'knight',n:6,gap:0.9}],
+  [{t:'knight',n:10,gap:0.7},{t:'rogue',n:10,gap:0.5},{t:'healer',n:5,gap:1.0}],
+  [{t:'boss',n:1,gap:1.0},{t:'knight',n:8,gap:0.9},{t:'healer',n:4,gap:1.4},{t:'rogue',n:10,gap:0.5}],
+];
+const PILLARS = [[4,4],[4,7],[8,2],[8,4],[8,7],[8,9],[12,3],[12,5],[12,6],[12,8],[15,4],[15,7],[17,3],[17,8]];
+
+// ---------- state ----------
+let grid, traps, heroes, projectiles, particles, floaters;
+let gold, lives, score, best = 0, kills, difficulty = 1;
+let state = 'title';           // title | play | pause | over | win
+let waveIdx = 0, waveActive = false, waveT = 0, spawnQ = [], prepT = 0;
+let dirty = true, distMap = null;
+let selected = 'spikes';
+let mouse = {x:-99, y:-99, tx:-1, ty:-1};
+let shakeT = 0, banner = null, time = 0;
+let speed = 1;
+
+try { best = +(localStorage.getItem('dungeonboss_best')||0); } catch(e){}
+
+function reset(){
+  grid = [];
+  for(let y=0;y<ROWS;y++){
+    const row = [];
+    for(let x=0;x<COLS;x++){
+      let t = 'floor';
+      if(x===0||y===0||x===COLS-1||y===ROWS-1) t = 'wall';
+      row.push(t);
+    }
+    grid.push(row);
+  }
+  grid[ENTRANCE.y][ENTRANCE.x] = 'entrance';
+  grid[EXIT.y][EXIT.x] = 'exit';
+  for(const [px,py] of PILLARS) grid[py][px] = 'pillar';
+  traps = new Map(); heroes = []; projectiles = []; particles = []; floaters = [];
+  gold = DIFF[difficulty].gold; lives = 10; score = 0; kills = 0;
+  waveIdx = 0; waveActive = false; spawnQ = []; prepT = 10; waveT = 0;
+  selected = 'spikes'; dirty = true; shakeT = 0;
+  banner = {text:'PREPARE!', sub:'Heroes are coming for your vault — build traps!', t:3};
+}
+
+function saveBest(){
+  if(score > best){ best = score; try{ localStorage.setItem('dungeonboss_best', best); }catch(e){} }
+}
+
+// ---------- pathfinding (reverse BFS from the vault) ----------
+function passable(x,y){
+  const t = grid[y][x];
+  if(t==='wall'||t==='pillar') return false;
+  const tr = traps.get(idxOf(x,y));
+  if(tr && !TRAPS[tr.type].walk) return false;
+  return true;
+}
+function computeDist(){
+  distMap = new Int16Array(COLS*ROWS).fill(-1);
+  const start = idxOf(EXIT.x, EXIT.y);
+  distMap[start] = 0;
+  const q = [start];
+  for(let qi=0; qi<q.length; qi++){
+    const i = q[qi], x = i%COLS, y = (i/COLS)|0;
+    for(const [dx,dy] of DIRS){
+      const nx = x+dx, ny = y+dy;
+      if(nx<0||ny<0||nx>=COLS||ny>=ROWS) continue;
+      const ni = idxOf(nx,ny);
+      if(distMap[ni]>=0 || !passable(nx,ny)) continue;
+      distMap[ni] = distMap[i]+1;
+      q.push(ni);
+    }
+  }
+}
+
+// ---------- traps ----------
+function placeTrap(x,y,type){
+  if(x<0||y<0||x>=COLS||y>=ROWS) return false;
+  const t = grid[y][x], i = idxOf(x,y);
+  const def = TRAPS[type];
+  if(t==='wall'||t==='pillar'||t==='entrance'||t==='exit') return false;
+  if(traps.has(i)) return false;
+  if(gold < def.cost){ sError(); floater((x+0.5)*TILE, OY+(y+0.5)*TILE, 'NO GOLD', '#ff5d73'); return false; }
+  gold -= def.cost;
+  traps.set(i, {type, hp:def.hp, maxHp:def.hp, cd:0, ang:0});
+  dirty = true; sPlace();
+  ring((x+0.5)*TILE, OY+(y+0.5)*TILE, def.color);
+  return true;
+}
+function sellTrap(x,y){
+  const i = idxOf(x,y), tr = traps.get(i);
+  if(!tr) return false;
+  const back = Math.floor(TRAPS[tr.type].cost/2);
+  gold += back; traps.delete(i); dirty = true;
+  floater((x+0.5)*TILE, OY+(y+0.5)*TILE, '+'+back, '#ffd166');
+  sPlace();
+  return true;
+}
+function destroyTrap(i, tr){
+  if(!traps.has(i)) return;
+  traps.delete(i); dirty = true;
+  burst(cxOf(i), cyOf(i), TRAPS[tr.type].color, 10);
+}
+
+// ---------- heroes ----------
+function spawnHero(type){
+  const d = HEROES[type];
+  const scale = DIFF[difficulty].hp * (1 + waveIdx*0.06);
+  const hp = Math.round(d.hp * scale);
+  heroes.push({
+    type, hp, maxHp:hp, reward:d.reward,
+    x: ENTRANCE.x*TILE + TILE/2 + Math.random()*6,
+    y: OY + (ENTRANCE.y+0.5)*TILE + (Math.random()-0.5)*26,
+    dirx:1, diry:0, walk:Math.random()*7,
+    flash:0, dotAcc:0, atkT:0, healT:Math.random(), slowT:0,
+    waitT:0, target:null, dead:false,
+  });
+}
+function damageHero(h, dmg){
+  const armor = HEROES[h.type].armor;
+  dmg = Math.max(1, dmg - armor);
+  h.hp -= dmg; h.flash = 0.12;
+  if(h.hp <= 0 && !h.dead){
+    h.dead = true; kills++;
+    gold += h.reward; score += 10;
+    floater(h.x, h.y - 20, '+'+h.reward, '#ffd166');
+    burst(h.x, h.y, HEROES[h.type].color, HEROES[h.type].boss?26:12);
+    sKill();
+  } else sHit();
+}
+function attackTrap(h, i, dt){
+  const tr = traps.get(i);
+  if(!tr){ h.target = null; return; }
+  h.target = i;
+  h.atkT += dt;
+  if(h.atkT >= 0.6){
+    h.atkT = 0;
+    tr.hp -= HEROES[h.type].dmgTrap;
+    burst(cxOf(i), cyOf(i), TRAPS[tr.type].color, 3);
+    sHit();
+    if(tr.hp <= 0) destroyTrap(i, tr);
+  }
+}
+function frontierTrap(tx,ty){
+  // BFS over the hero's sealed region, find nearest blocking player trap
+  const seen = new Uint8Array(COLS*ROWS);
+  const q = [idxOf(tx,ty)]; seen[q[0]] = 1;
+  for(let qi=0; qi<q.length; qi++){
+    const i = q[qi], x = i%COLS, y = (i/COLS)|0;
+    for(const [dx,dy] of DIRS){
+      const nx = x+dx, ny = y+dy;
+      if(nx<0||ny<0||nx>=COLS||ny>=ROWS) continue;
+      const ni = idxOf(nx,ny);
+      if(seen[ni]) continue;
+      if(!passable(nx,ny)){
+        if(traps.has(ni)) return ni;   // player-made blocker
+        seen[ni] = 2;                  // fixed wall, keep looking around it
+        continue;
+      }
+      seen[ni] = 1; q.push(ni);
+    }
+  }
+  return null;
+}
+function healPulse(h){
+  for(const a of heroes){
+    if(a.dead) continue;
+    if(Math.hypot(a.x-h.x, a.y-h.y) < 130 && a.hp < a.maxHp){
+      a.hp = Math.min(a.maxHp, a.hp + 12);
+      spark(a.x, a.y-14, '#5ad19a');
+    }
+  }
+}
+function updateHero(h, dt){
+  if(h.dead) return;
+  h.flash = Math.max(0, h.flash - dt);
+  h.slowT = Math.max(0, h.slowT - dt);
+  const slowF = h.slowT > 0 ? 0.55 : 1;
+  const tx = clampi(Math.floor(h.x/TILE),0,COLS-1);
+  const ty = clampi(Math.floor((h.y-OY)/TILE),0,ROWS-1);
+  const i = idxOf(tx,ty);
+
+  // floor hazard ticking
+  const own = traps.get(i);
+  if(own && TRAPS[own.type].dot){
+    if(TRAPS[own.type].slow) h.slowT = 0.6;
+    h.dotAcc += dt;
+    if(h.dotAcc >= TRAPS[own.type].tick){
+      h.dotAcc -= TRAPS[own.type].tick;
+      let dmg = TRAPS[own.type].dot;
+      if(HEROES[h.type].trapResist) dmg *= HEROES[h.type].trapResist;
+      damageHero(h, dmg);
+      own.hp -= 3;
+      spark(h.x, h.y, TRAPS[own.type].color);
+      if(own.hp <= 0) destroyTrap(i, own);
+      if(h.dead) return;
+    }
+  }
+  if(HEROES[h.type].healer){
+    h.healT += dt;
+    if(h.healT >= 1){ h.healT = 0; healPulse(h); }
+  }
+
+  const d = distMap[i];
+  if(d < 0){
+    // sealed region — chew through the nearest player trap
+    const ft = frontierTrap(tx,ty);
+    if(ft != null){ attackTrap(h, ft, dt); }
+    else { h.waitT += dt; if(h.waitT > 6){ flee(h); } }
+    return;
+  }
+  h.waitT = 0;
+  if(d === 0){ reachExit(h); return; }
+
+  // step to the neighbouring tile closest to the vault
+  let nb = null, bd = d;
+  for(const [dx,dy] of DIRS){
+    const nx = tx+dx, ny = ty+dy;
+    if(nx<0||ny<0||nx>=COLS||ny>=ROWS) continue;
+    const nd = distMap[idxOf(nx,ny)];
+    if(nd >= 0 && nd < bd){ bd = nd; nb = {x:nx, y:ny}; }
+  }
+  if(!nb) return;
+  const ni = idxOf(nb.x, nb.y);
+  const blocker = traps.get(ni);
+  if(blocker && !TRAPS[blocker.type].walk){ attackTrap(h, ni, dt); return; }
+
+  const spd = HEROES[h.type].spd * slowF;
+  const cx = (nb.x+0.5)*TILE, cy = OY + (nb.y+0.5)*TILE;
+  const dx = cx - h.x, dy = cy - h.y;
+  const dist = Math.hypot(dx,dy);
+  if(dist > 0.001){
+    const mv = Math.min(dist, spd*dt);
+    h.x += dx/dist*mv; h.y += dy/dist*mv;
+    h.walk += mv*0.12;
+    h.dirx = dx; h.diry = dy;
+  }
+}
+function reachExit(h){
+  h.dead = true; lives--;
+  floater(h.x, h.y-24, '-1', '#ff5d73');
+  burst(h.x, h.y, '#ffd166', 14);
+  shake(0.5); sLife();
+  if(lives <= 0){ lives = 0; gameOver(); }
+}
+function flee(h){
+  h.dead = true;
+  floater(h.x, h.y-20, 'ESCAPED', '#8d86a8');
+}
+function separate(){
+  const minD = 26;
+  const prev = heroes.map(h => [h.x, h.y]);
+  for(let i=0;i<heroes.length;i++){
+    for(let j=i+1;j<heroes.length;j++){
+      const a = heroes[i], b = heroes[j];
+      let dx = b.x-a.x, dy = b.y-a.y;
+      let d = Math.hypot(dx,dy);
+      if(d < 0.001){ dx = Math.random()-0.5; dy = Math.random()-0.5; d = Math.hypot(dx,dy); }
+      if(d < minD){
+        const push = (minD-d)/2;
+        dx /= d; dy /= d;
+        a.x -= dx*push; a.y -= dy*push;
+        b.x += dx*push; b.y += dy*push;
+      }
+    }
+  }
+  for(let k=0;k<heroes.length;k++){
+    const h = heroes[k];
+    const tx = clampi(Math.floor(h.x/TILE),0,COLS-1);
+    const ty = clampi(Math.floor((h.y-OY)/TILE),0,ROWS-1);
+    if(!passable(tx,ty)){ h.x = prev[k][0]; h.y = prev[k][1]; }
+  }
+}
+
+// ---------- towers & projectiles ----------
+function updateTurrets(dt){
+  for(const [i,tr] of traps){
+    if(tr.type !== 'turret') continue;
+    tr.cd -= dt;
+    if(tr.cd > 0) continue;
+    const sx = cxOf(i), sy = cyOf(i);
+    let best = null, bd = TRAPS.turret.range*TILE;
+    for(const h of heroes){
+      if(h.dead) continue;
+      const d = Math.hypot(h.x-sx, h.y-sy);
+      if(d < bd){ bd = d; best = h; }
+    }
+    if(best){
+      tr.cd = TRAPS.turret.rate;
+      tr.ang = Math.atan2(best.y-sy, best.x-sx);
+      projectiles.push({x:sx, y:sy, target:best, dmg:TRAPS.turret.dmg,
+        spd:560, dirx:Math.cos(tr.ang), diry:Math.sin(tr.ang), life:2});
+      sShoot();
+    } else tr.cd = 0.25;
+  }
+}
+function updateProjectiles(dt){
+  for(const p of projectiles){
+    let dx, dy;
+    if(p.target && !p.target.dead){ dx = p.target.x-p.x; dy = p.target.y-p.y; p.dirx = dx; p.diry = dy; }
+    else { dx = p.dirx; dy = p.diry; }
+    const d = Math.hypot(dx,dy) || 1;
+    p.x += dx/d*p.spd*dt; p.y += dy/d*p.spd*dt;
+    p.life -= dt;
+    if(p.target && !p.target.dead && Math.hypot(p.target.x-p.x, p.target.y-p.y) < 13){
+      damageHero(p.target, p.dmg);
+      spark(p.x, p.y, '#ffe9a8');
+      p.life = 0;
+    }
+  }
+  projectiles = projectiles.filter(p => p.life > 0);
+}
+
+// ---------- particles / floaters ----------
+function burst(x,y,color,n){
+  for(let k=0;k<n;k++){
+    const a = Math.random()*TAU, s = 40+Math.random()*140;
+    particles.push({x, y, vx:Math.cos(a)*s, vy:Math.sin(a)*s-30,
+      life:0.4+Math.random()*0.4, t:0, color, size:2+Math.random()*3, grav:260});
+  }
+}
+function ring(x,y,color){
+  particles.push({x, y, vx:0, vy:0, life:0.45, t:0, color, size:6, ring:true});
+}
+function spark(x,y,color){
+  particles.push({x, y, vx:(Math.random()-0.5)*90, vy:-40-Math.random()*60,
+    life:0.3, t:0, color, size:2, grav:300});
+}
+function floater(x,y,text,color){ floaters.push({x, y, text, color, t:0, life:1.1}); }
+function updateParticles(dt){
+  for(const p of particles){
+    p.t += dt;
+    if(!p.ring){ p.vy += p.grav*dt; p.x += p.vx*dt; p.y += p.vy*dt; }
+  }
+  particles = particles.filter(p => p.t < p.life);
+  for(const f of floaters){ f.t += dt; f.y -= 34*dt; }
+  floaters = floaters.filter(f => f.t < f.life);
+}
+function shake(m){ shakeT = Math.max(shakeT, m); }
+
+// ---------- waves ----------
+function startWave(){
+  spawnQ = []; let t = 0;
+  for(const g of WAVES[waveIdx])
+    for(let k=0;k<g.n;k++){ spawnQ.push({t, type:g.t}); t += g.gap; }
+  spawnQ.sort((a,b)=>a.t-b.t);
+  waveT = 0; waveActive = true;
+  banner = {text:'WAVE '+(waveIdx+1), sub:waveIdx===WAVES.length-1 ? 'THE SLAYER APPROACHES' : 'Hold the line!', t:2.2};
+  sHorn();
+}
+function onWaveCleared(){
+  waveActive = false;
+  const bonus = 25 + waveIdx*8;
+  gold += bonus; score += 200;
+  floater(W/2, OY+ROWS*TILE/2, 'WAVE CLEAR  +'+bonus, '#ffd166');
+  if(waveIdx >= WAVES.length-1){ winGame(); return; }
+  waveIdx++; prepT = 15;
+  banner = {text:'SAFE... FOR NOW', sub:'Next wave in 15s — SPACE to start early for bonus gold', t:2.4};
+}
+function winGame(){
+  state = 'win';
+  score += lives*100;
+  score = Math.round(score * DIFF[difficulty].mult);
+  saveBest(); sWin();
+}
+function gameOver(){
+  state = 'over';
+  score = Math.round(score * DIFF[difficulty].mult);
+  saveBest(); sLose();
+}
+
+// ---------- update ----------
+function update(dt){
+  if(state !== 'play') return;
+  time += dt;
+  shakeT = Math.max(0, shakeT - dt);
+  if(banner) { banner.t -= dt; if(banner.t <= 0) banner = null; }
+  if(dirty){ computeDist(); dirty = false; }
+
+  if(waveActive){
+    waveT += dt;
+    while(spawnQ.length && spawnQ[0].t <= waveT){ spawnHero(spawnQ[0].type); spawnQ.shift(); }
+  } else if(prepT > 0){
+    prepT -= dt;
+    if(prepT <= 0) startWave();
+  }
+
+  for(const h of heroes) updateHero(h, dt);
+  separate();
+  heroes = heroes.filter(h => !h.dead);
+  updateTurrets(dt);
+  updateProjectiles(dt);
+  updateParticles(dt);
+
+  if(waveActive && !spawnQ.length && !heroes.length) onWaveCleared();
+}
+
+// ---------- input ----------
+function mousePos(e){
+  const r = cvs.getBoundingClientRect();
+  mouse.x = (e.clientX - r.left) * (W / r.width);
+  mouse.y = (e.clientY - r.top) * (H / r.height);
+  mouse.tx = Math.floor(mouse.x / TILE);
+  mouse.ty = Math.floor((mouse.y - OY) / TILE);
+}
+window.addEventListener('mousemove', mousePos);
+cvs.addEventListener('click', e => {
+  audio(); mousePos(e);
+  if(state === 'title'){ state = 'play'; banner = {text:'BUILD!', sub:'Left click floor to place traps', t:3}; sPlace(); return; }
+  if(state === 'over' || state === 'win'){ reset(); state = 'title'; return; }
+  if(state !== 'play') return;
+  if(mouse.y < OY || mouse.ty >= ROWS || mouse.tx >= COLS) return;
+  placeTrap(mouse.tx, mouse.ty, selected);
+});
+cvs.addEventListener('contextmenu', e => {
+  e.preventDefault(); mousePos(e);
+  if(state !== 'play') return;
+  if(mouse.y < OY || mouse.ty >= ROWS || mouse.tx >= COLS) return;
+  sellTrap(mouse.tx, mouse.ty);
+});
+window.addEventListener('keydown', e => {
+  const k = e.key;
+  if(k === ' ' || k.startsWith('Arrow')) e.preventDefault();
+  audio();
+  if(state === 'title'){
+    if(k === 'Enter' || k === ' '){ state = 'play';
+      banner = {text:'BUILD!', sub:'Left click the floor to place traps', t:3}; sPlace(); }
+    else if(k === '1'){ difficulty = 0; reset(); }
+    else if(k === '2'){ difficulty = 1; reset(); }
+    else if(k === '3'){ difficulty = 2; reset(); }
+    return;
+  }
+  if(state === 'over' || state === 'win'){
+    if(k === 'Enter'){ reset(); state = 'title'; }
+    return;
+  }
+  if(k === 'p' || k === 'P'){ state = state === 'play' ? 'pause' : 'play'; return; }
+  if(state !== 'play') return;
+  if(k >= '1' && k <= '4'){ selected = ORDER[+k-1]; sPlace(); }
+  if(k === ' ' && !waveActive && prepT > 0){
+    const bonus = Math.floor(prepT*3);
+    gold += bonus;
+    floater(W/2, OY+40, 'EARLY BONUS +'+bonus, '#ffd166');
+    prepT = 0; startWave();
+  }
+});
+
+// ---------- render: world ----------
+function drawGrid(){
+  ctx.fillStyle = '#0d0a16';
+  ctx.fillRect(0,0,W,H);
+  for(let y=0;y<ROWS;y++){
+    for(let x=0;x<COLS;x++){
+      const t = grid[y][x];
+      const px = x*TILE, py = OY + y*TILE;
+      if(t === 'wall' || t === 'pillar'){
+        ctx.fillStyle = t === 'wall' ? '#171226' : '#1d1730';
+        ctx.fillRect(px,py,TILE,TILE);
+        ctx.fillStyle = '#241d3a';
+        ctx.fillRect(px,py,TILE,7);
+        ctx.fillStyle = 'rgba(0,0,0,.35)';
+        ctx.fillRect(px, py+TILE-4, TILE, 4);
+        ctx.strokeStyle = 'rgba(0,0,0,.5)'; ctx.lineWidth = 1;
+        ctx.strokeRect(px+0.5, py+0.5, TILE-1, TILE-1);
+        // brick hint
+        ctx.strokeStyle = 'rgba(0,0,0,.25)';
+        ctx.beginPath(); ctx.moveTo(px, py+24); ctx.lineTo(px+TILE, py+24);
+        ctx.moveTo(px+24, py+7); ctx.lineTo(px+24, py+24); ctx.stroke();
+      } else {
+        const alt = ((x*7 + y*13) % 3 === 0);
+        ctx.fillStyle = alt ? '#262036' : '#2a2440';
+        ctx.fillRect(px,py,TILE,TILE);
+        ctx.strokeStyle = 'rgba(0,0,0,.28)';
+        ctx.strokeRect(px+0.5, py+0.5, TILE-1, TILE-1);
+        // speckles
+        if((x*31+y*17)%5 === 0){
+          ctx.fillStyle = 'rgba(255,255,255,.045)';
+          ctx.fillRect(px+10, py+14, 3, 3); ctx.fillRect(px+30, py+31, 2, 2);
+        }
+      }
+    }
+  }
+  // entrance glow
+  const ex = (ENTRANCE.x+0.5)*TILE, ey = OY+(ENTRANCE.y+0.5)*TILE;
+  let g = ctx.createRadialGradient(ex,ey,4, ex,ey,60);
+  g.addColorStop(0,'rgba(150,80,255,.5)'); g.addColorStop(1,'rgba(150,80,255,0)');
+  ctx.fillStyle = g; ctx.fillRect(ex-70, ey-70, 140, 140);
+  ctx.fillStyle = '#c9a6ff'; ctx.font = 'bold 10px sans-serif'; ctx.textAlign = 'center';
+  ctx.fillText('GATE', ex, ey+4);
+  // vault (goal)
+  const vx = (EXIT.x+0.5)*TILE, vy = OY+(EXIT.y+0.5)*TILE;
+  g = ctx.createRadialGradient(vx,vy,4, vx,vy,72);
+  g.addColorStop(0,'rgba(255,200,60,.55)'); g.addColorStop(1,'rgba(255,200,60,0)');
+  ctx.fillStyle = g; ctx.fillRect(vx-80, vy-80, 160, 160);
+  ctx.fillStyle = '#8a5a2b'; rr(vx-15, vy-8, 30, 18, 3); ctx.fill();
+  ctx.fillStyle = '#ffd166'; rr(vx-15, vy-14, 30, 10, 3); ctx.fill();
+  ctx.fillStyle = '#5a3a18'; ctx.fillRect(vx-2, vy-8, 4, 8);
+}
+function drawTrapIcon(type, x, y, s){
+  const def = TRAPS[type];
+  ctx.save(); ctx.translate(x,y);
+  if(type === 'spikes'){
+    ctx.fillStyle = '#4a5068'; ctx.fillRect(-s/2, s*0.15, s, s*0.25);
+    ctx.fillStyle = def.color;
+    for(let k=0;k<4;k++){
+      const bx = -s/2 + k*(s/4) + 2;
+      ctx.beginPath(); ctx.moveTo(bx, s*0.15); ctx.lineTo(bx+s/8, -s*0.4);
+      ctx.lineTo(bx+s/4, s*0.15); ctx.closePath(); ctx.fill();
+    }
+  } else if(type === 'lava'){
+    ctx.fillStyle = '#7a2c00'; ctx.beginPath(); ctx.ellipse(0,0,s*0.5,s*0.32,0,0,TAU); ctx.fill();
+    ctx.fillStyle = '#ff7a1a'; ctx.beginPath(); ctx.ellipse(-s*0.12,-2,s*0.28,s*0.18,0,0,TAU); ctx.fill();
+    ctx.fillStyle = '#ffd166'; ctx.beginPath(); ctx.ellipse(s*0.14,3,s*0.16,s*0.1,0,0,TAU); ctx.fill();
+  } else if(type === 'turret'){
+    ctx.fillStyle = '#8a5a2b'; ctx.fillRect(-s*0.4, 0, s*0.8, s*0.3);
+    ctx.strokeStyle = '#c8874a'; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(-s*0.3, -s*0.05); ctx.lineTo(s*0.35, -s*0.35); ctx.stroke();
+    ctx.strokeStyle = '#e0d3b8'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(s*0.05,-s*0.5); ctx.lineTo(s*0.45,-s*0.2); ctx.stroke();
+  } else {
+    ctx.fillStyle = '#7a6248'; ctx.fillRect(-s*0.4, -s*0.35, s*0.8, s*0.7);
+    ctx.strokeStyle = '#4a3a28'; ctx.lineWidth = 2;
+    ctx.strokeRect(-s*0.4, -s*0.35, s*0.8, s*0.7);
+    ctx.beginPath(); ctx.moveTo(-s*0.4,-s*0.35); ctx.lineTo(s*0.4,s*0.35);
+    ctx.moveTo(s*0.4,-s*0.35); ctx.lineTo(-s*0.4,s*0.35); ctx.stroke();
+  }
+  ctx.restore();
+}
+function drawTraps(){
+  for(const [i,tr] of traps){
+    const x = cxOf(i), y = cyOf(i);
+    const def = TRAPS[tr.type];
+    if(tr.type === 'spikes'){
+      ctx.fillStyle = '#3d4257'; ctx.fillRect(x-21, y-4, 42, 14);
+      const full = tr.hp/tr.maxHp > 0.5;
+      ctx.fillStyle = def.color;
+      for(let k=0;k<5;k++){
+        if(!full && k%2===0 && tr.hp/tr.maxHp < 0.35) continue;
+        const bx = x-20 + k*8.4;
+        ctx.beginPath(); ctx.moveTo(bx, y+2); ctx.lineTo(bx+4, y-16); ctx.lineTo(bx+8, y+2);
+        ctx.closePath(); ctx.fill();
+      }
+    } else if(tr.type === 'lava'){
+      ctx.fillStyle = '#5a1f00'; ctx.fillRect(x-21, y-14, 42, 30);
+      for(let k=0;k<3;k++){
+        const ph = Math.sin(time*3 + k*2.1)*3;
+        ctx.fillStyle = k===0?'#ff7a1a':(k===1?'#ffa63d':'#ffd166');
+        ctx.beginPath();
+        ctx.ellipse(x-10+k*11, y+ph, 9-k, 7-k, 0, 0, TAU); ctx.fill();
+      }
+    } else if(tr.type === 'turret'){
+      ctx.fillStyle = '#4a3a28'; ctx.beginPath(); ctx.ellipse(x, y+8, 16, 8, 0, 0, TAU); ctx.fill();
+      ctx.fillStyle = '#8a5a2b'; rr(x-11, y-6, 22, 16, 3); ctx.fill();
+      ctx.save(); ctx.translate(x, y-2); ctx.rotate(tr.ang);
+      ctx.strokeStyle = '#c8874a'; ctx.lineWidth = 5;
+      ctx.beginPath(); ctx.moveTo(-4,0); ctx.lineTo(18,0); ctx.stroke();
+      ctx.strokeStyle = '#e0d3b8'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(8,-9); ctx.lineTo(8,9); ctx.stroke();
+      ctx.restore();
+    } else {
+      ctx.fillStyle = '#7a6248'; rr(x-19, y-16, 38, 34, 3); ctx.fill();
+      ctx.strokeStyle = '#463626'; ctx.lineWidth = 2.5; ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x-19,y-16); ctx.lineTo(x+19,y+18);
+      ctx.moveTo(x+19,y-16); ctx.lineTo(x-19,y+18); ctx.stroke();
+      ctx.fillStyle = '#c9d1e0';
+      for(let k=0;k<3;k++){
+        ctx.beginPath(); ctx.moveTo(x-12+k*12, y-16); ctx.lineTo(x-7+k*12, y-26); ctx.lineTo(x-2+k*12, y-16);
+        ctx.closePath(); ctx.fill();
+      }
+    }
+    if(tr.hp < tr.maxHp){
+      const w = 34, pct = Math.max(0, tr.hp/tr.maxHp);
+      ctx.fillStyle = 'rgba(0,0,0,.6)'; ctx.fillRect(x-w/2, y-26, w, 5);
+      ctx.fillStyle = pct > .5 ? '#5ad19a' : (pct > .25 ? '#ffd166' : '#ff5d73');
+      ctx.fillRect(x-w/2, y-26, w*pct, 5);
+    }
+  }
+}
+function drawHero(h){
+  const d = HEROES[h.type];
+  const s = d.size;
+  ctx.save();
+  ctx.translate(h.x, h.y);
+  ctx.fillStyle = 'rgba(0,0,0,.35)';
+  ctx.beginPath(); ctx.ellipse(0, s*0.9, s*0.85, s*0.3, 0, 0, TAU); ctx.fill();
+  const f = (h.dirx || 1) < 0 ? -1 : 1;
+  ctx.scale(f, 1);
+  const flash = h.flash > 0;
+  // body
+  ctx.fillStyle = flash ? '#ffffff' : d.color;
+  ctx.strokeStyle = 'rgba(0,0,0,.6)'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.arc(0, 0, s, 0, TAU); ctx.fill(); ctx.stroke();
+  const swing = Math.sin(h.walk*1.6) * 0.6;
+  if(h.type === 'squire'){
+    ctx.fillStyle = flash ? '#fff' : '#cfd8ea';
+    ctx.beginPath(); ctx.arc(0, -s*0.35, s*0.7, Math.PI, 0); ctx.fill();
+    ctx.strokeStyle = '#e8eefc'; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(s*0.7, -2); ctx.lineTo(s*1.7, -s*0.7 + swing*6); ctx.stroke();
+  } else if(h.type === 'rogue'){
+    ctx.fillStyle = flash ? '#fff' : '#5a3a8a';
+    ctx.beginPath(); ctx.moveTo(-s*0.8, -s*0.2); ctx.lineTo(0, -s*1.3); ctx.lineTo(s*0.8, -s*0.2);
+    ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = '#d9c6ff'; ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.moveTo(s*0.6, s*0.2); ctx.lineTo(s*1.4, -s*0.3+swing*5); ctx.stroke();
+  } else if(h.type === 'knight'){
+    ctx.fillStyle = flash ? '#fff' : '#6b7690';
+    rr(-s*0.55, -s*0.95, s*1.1, s*0.9, 3); ctx.fill();
+    ctx.fillStyle = '#2a2f42'; ctx.fillRect(-s*0.35, -s*0.6, s*0.7, 3);
+    ctx.fillStyle = flash ? '#fff' : '#59648a';
+    rr(-s*1.3, -s*0.4, s*0.7, s*1.3, 3); ctx.fill();
+    ctx.strokeStyle = '#aab6d6'; ctx.lineWidth = 2; ctx.stroke();
+  } else if(h.type === 'healer'){
+    ctx.strokeStyle = '#c9b789'; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(s*0.8, s*0.6); ctx.lineTo(s*1.2, -s*1.1); ctx.stroke();
+    ctx.fillStyle = flash ? '#fff' : '#e9fff5';
+    ctx.beginPath(); ctx.arc(s*1.2, -s*1.2, s*0.35, 0, TAU); ctx.fill();
+    ctx.fillStyle = flash ? '#fff' : '#ffffff';
+    ctx.fillRect(-2.5, -s*0.45, 5, s*0.9); ctx.fillRect(-s*0.45, -2.5, s*0.9, 5);
+  } else if(h.type === 'boss'){
+    ctx.fillStyle = flash ? '#fff' : '#5a1414';
+    ctx.beginPath(); ctx.moveTo(-s*0.7, -s*0.6); ctx.lineTo(-s*1.1, -s*1.5); ctx.lineTo(-s*0.2, -s*0.85);
+    ctx.closePath(); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(s*0.7, -s*0.6); ctx.lineTo(s*1.1, -s*1.5); ctx.lineTo(s*0.2, -s*0.85);
+    ctx.closePath(); ctx.fill();
+    ctx.fillStyle = '#ffe9a8';
+    ctx.beginPath(); ctx.arc(-s*0.3, -s*0.15, 3, 0, TAU); ctx.arc(s*0.3, -s*0.15, 3, 0, TAU); ctx.fill();
+    ctx.strokeStyle = '#d9d9e8'; ctx.lineWidth = 5;
+    ctx.beginPath(); ctx.moveTo(s*0.9, s*0.4); ctx.lineTo(s*2.1, -s*0.9 + swing*8); ctx.stroke();
+    const pulse = 0.4 + Math.sin(time*4)*0.2;
+    ctx.strokeStyle = 'rgba(232,76,76,'+pulse.toFixed(2)+')'; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.arc(0,0, s*1.5, 0, TAU); ctx.stroke();
+  }
+  // eyes
+  if(h.type !== 'boss'){
+    ctx.fillStyle = '#0d0a16';
+    ctx.beginPath(); ctx.arc(s*0.25, -s*0.1, 2, 0, TAU); ctx.fill();
+  }
+  ctx.restore();
+  // hp bar
+  if(h.hp < h.maxHp){
+    const w = Math.max(26, s*2.4), pct = Math.max(0, h.hp/h.maxHp);
+    ctx.fillStyle = 'rgba(0,0,0,.65)'; ctx.fillRect(h.x-w/2, h.y-s-11, w, 5);
+    ctx.fillStyle = pct > .5 ? '#5ad19a' : (pct > .25 ? '#ffd166' : '#ff5d73');
+    ctx.fillRect(h.x-w/2, h.y-s-11, w*pct, 5);
+  }
+}
+function drawHover(){
+  if(state !== 'play') return;
+  if(mouse.tx < 0 || mouse.ty < 0 || mouse.tx >= COLS || mouse.ty >= ROWS) return;
+  if(mouse.y < OY) return;
+  const t = grid[mouse.ty][mouse.tx];
+  const i = idxOf(mouse.tx, mouse.ty);
+  const ok = !(t==='wall'||t==='pillar'||t==='entrance'||t==='exit'||traps.has(i)) && gold >= TRAPS[selected].cost;
+  const px = mouse.tx*TILE, py = OY + mouse.ty*TILE;
+  ctx.fillStyle = ok ? 'rgba(90,209,154,.18)' : 'rgba(255,93,115,.18)';
+  ctx.fillRect(px, py, TILE, TILE);
+  ctx.strokeStyle = ok ? '#5ad19a' : '#ff5d73'; ctx.lineWidth = 2;
+  ctx.strokeRect(px+1, py+1, TILE-2, TILE-2);
+}
+function drawParticles(){
+  for(const p of particles){
+    const a = 1 - p.t/p.life;
+    if(p.ring){
+      ctx.strokeStyle = p.color; ctx.globalAlpha = a; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.arc(p.x, p.y, 6 + (1-a)*44, 0, TAU); ctx.stroke();
+      ctx.globalAlpha = 1;
+    } else {
+      ctx.globalAlpha = a; ctx.fillStyle = p.color;
+      ctx.fillRect(p.x - p.size/2, p.y - p.size/2, p.size, p.size);
+      ctx.globalAlpha = 1;
+    }
+  }
+  ctx.textAlign = 'center';
+  for(const f of floaters){
+    ctx.globalAlpha = Math.min(1, 2*(1 - f.t/f.life));
+    ctx.fillStyle = f.color; ctx.font = 'bold 15px "Segoe UI", sans-serif';
+    ctx.fillText(f.text, f.x, f.y);
+    ctx.globalAlpha = 1;
+  }
+}
+function drawProjectiles(){
+  ctx.strokeStyle = '#ffe9a8'; ctx.lineWidth = 2.5;
+  for(const p of projectiles){
+    const a = Math.atan2(p.diry, p.dirx);
+    ctx.beginPath();
+    ctx.moveTo(p.x, p.y);
+    ctx.lineTo(p.x - Math.cos(a)*14, p.y - Math.sin(a)*14);
+    ctx.stroke();
+  }
+}
+
+// ---------- render: UI ----------
+function heart(x,y,s,c){
+  ctx.fillStyle = c;
+  ctx.beginPath(); ctx.arc(x - s*0.3, y - s*0.2, s*0.34, 0, TAU); ctx.fill();
+  ctx.beginPath(); ctx.arc(x + s*0.3, y - s*0.2, s*0.34, 0, TAU); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(x - s*0.62, y + s*0.05); ctx.lineTo(x + s*0.62, y + s*0.05);
+  ctx.lineTo(x, y + s*0.7); ctx.closePath(); ctx.fill();
+}
+function drawHUD(){
+  ctx.fillStyle = '#12101d';
+  ctx.fillRect(0,0,W,HUD_H);
+  ctx.fillStyle = '#1c1830'; ctx.fillRect(0, HUD_H-3, W, 3);
+  ctx.textAlign = 'left'; ctx.font = 'bold 17px "Segoe UI", sans-serif';
+  // gold
+  ctx.fillStyle = '#ffd166';
+  ctx.beginPath(); ctx.arc(26, 24, 9, 0, TAU); ctx.fill();
+  ctx.fillStyle = '#8a6a1a'; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'center';
+  ctx.fillText('G', 26, 28);
+  ctx.textAlign = 'left'; ctx.fillStyle = '#ffe9a8';
+  ctx.font = 'bold 17px "Segoe UI", sans-serif';
+  ctx.fillText(gold, 42, 30);
+  // lives
+  for(let k=0;k<10;k++) heart(130 + k*22, 24, 14, k < lives ? '#ff5d73' : '#3a2a3a');
+  // wave / score / best
+  ctx.fillStyle = '#c9c3e0'; ctx.font = 'bold 15px "Segoe UI", sans-serif';
+  ctx.fillText('WAVE '+(waveIdx+1)+'/'+WAVES.length, 375, 30);
+  ctx.fillStyle = '#9d96bb';
+  ctx.fillText('SCORE ' + score, 505, 30);
+  ctx.fillText('BEST ' + best, 630, 30);
+  ctx.fillStyle = DIFF[difficulty].name === 'Overlord' ? '#ff5d73' : (DIFF[difficulty].name === 'Knight' ? '#9aa4c0' : '#5ad19a');
+  ctx.fillText(DIFF[difficulty].name, 750, 30);
+  // prep timer
+  if(!waveActive && prepT > 0){
+    ctx.fillStyle = '#ffd166'; ctx.textAlign = 'right';
+    ctx.fillText('NEXT WAVE ' + Math.ceil(prepT) + 's', W-16, 30);
+    ctx.textAlign = 'left';
+  }
+}
+function drawPalette(){
+  const y = HUD_H + ROWS*TILE;
+  ctx.fillStyle = '#12101d'; ctx.fillRect(0, y, W, PAL_H);
+  ctx.fillStyle = '#1c1830'; ctx.fillRect(0, y, W, 3);
+  const bw = 168, gap = 10, bx0 = 14, by = y + 8, bh = PAL_H - 16;
+  for(let k=0;k<ORDER.length;k++){
+    const key = ORDER[k], def = TRAPS[key];
+    const bx = bx0 + k*(bw+gap);
+    const sel = selected === key;
+    const afford = gold >= def.cost;
+    ctx.fillStyle = sel ? '#282140' : '#1a1630';
+    rr(bx, by, bw, bh, 8); ctx.fill();
+    ctx.strokeStyle = sel ? '#ffd166' : '#2e2848'; ctx.lineWidth = sel ? 2.5 : 1.5;
+    rr(bx+1, by+1, bw-2, bh-2, 8); ctx.stroke();
+    ctx.globalAlpha = afford ? 1 : 0.4;
+    drawTrapIcon(key, bx+32, by+bh/2, 40);
+    ctx.globalAlpha = 1;
+    ctx.textAlign = 'left';
+    ctx.fillStyle = afford ? '#eae6ff' : '#7a7499';
+    ctx.font = 'bold 15px "Segoe UI", sans-serif';
+    ctx.fillText(def.name + '  ' + def.cn, bx+62, by+26);
+    ctx.fillStyle = afford ? '#ffd166' : '#8a6a1a';
+    ctx.font = 'bold 14px "Segoe UI", sans-serif';
+    ctx.fillText(def.cost + ' gold', bx+62, by+48);
+    // hotkey badge
+    ctx.fillStyle = sel ? '#ffd166' : '#3a3458';
+    ctx.beginPath(); ctx.arc(bx+bw-18, by+18, 11, 0, TAU); ctx.fill();
+    ctx.fillStyle = sel ? '#1a1630' : '#c9c3e0';
+    ctx.font = 'bold 13px sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText(def.key, bx+bw-18, by+23);
+  }
+  // hints
+  ctx.textAlign = 'left'; ctx.fillStyle = '#7a7499'; ctx.font = '12px "Segoe UI", sans-serif';
+  const hx = bx0 + 4*(bw+gap) + 8;
+  ctx.fillText('RMB  sell trap (50%)', hx, y+26);
+  ctx.fillText('SPACE  next wave now (+gold)', hx, y+46);
+  ctx.fillText('P  pause', hx, y+66);
+}
+function drawBanner(){
+  if(!banner) return;
+  const a = Math.min(1, banner.t);
+  ctx.globalAlpha = a;
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#ffd166';
+  ctx.font = 'bold 52px "Segoe UI", sans-serif';
+  ctx.shadowColor = 'rgba(255,120,60,.8)'; ctx.shadowBlur = 18;
+  ctx.fillText(banner.text, W/2, OY + ROWS*TILE*0.35);
+  ctx.shadowBlur = 0;
+  ctx.fillStyle = '#e9e4ff'; ctx.font = '16px "Segoe UI", sans-serif';
+  ctx.fillText(banner.sub, W/2, OY + ROWS*TILE*0.35 + 32);
+  ctx.globalAlpha = 1;
+}
+function drawVignette(){
+  const g = ctx.createRadialGradient(W/2, H/2, H*0.35, W/2, H/2, H*0.85);
+  g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,.55)');
+  ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
+}
+function overlay(alpha){ ctx.fillStyle = 'rgba(8,6,14,'+alpha+')'; ctx.fillRect(0,0,W,H); }
+function centerText(txt, y, font, color, glow){
+  ctx.textAlign = 'center'; ctx.font = font; ctx.fillStyle = color;
+  if(glow){ ctx.shadowColor = glow; ctx.shadowBlur = 22; }
+  ctx.fillText(txt, W/2, y);
+  ctx.shadowBlur = 0;
+}
+function drawTitle(){
+  overlay(0.82);
+  centerText('DUNGEON BOSS', H*0.30, 'bold 68px "Segoe UI", sans-serif', '#ffd166', 'rgba(255,140,60,.9)');
+  centerText('地 城 霸 主', H*0.30+52, 'bold 30px "Segoe UI", sans-serif', '#c9a6ff');
+  centerText('You are the dungeon. Heroes are coming for your vault.', H*0.44, '18px "Segoe UI", sans-serif', '#e9e4ff');
+  centerText('Left click: place trap ·  Right click: sell (50%) ·  1–4: choose trap', H*0.52, '16px "Segoe UI", sans-serif', '#9d96bb');
+  centerText('SPACE: start wave early for bonus gold ·  P: pause', H*0.56, '16px "Segoe UI", sans-serif', '#9d96bb');
+  centerText('Survive all ' + WAVES.length + ' waves.', H*0.62, 'bold 17px "Segoe UI", sans-serif', '#5ad19a');
+  // difficulty picker
+  for(let k=0;k<DIFF.length;k++){
+    const x = W/2 + (k-1)*210, y = H*0.74, sel = difficulty === k;
+    ctx.fillStyle = sel ? '#282140' : '#1a1630';
+    rr(x-92, y-24, 184, 48, 8); ctx.fill();
+    ctx.strokeStyle = sel ? '#ffd166' : '#2e2848'; ctx.lineWidth = sel ? 2.5 : 1.5;
+    rr(x-91, y-23, 182, 46, 8); ctx.stroke();
+    ctx.textAlign = 'center';
+    ctx.fillStyle = sel ? '#ffe9a8' : '#9d96bb'; ctx.font = 'bold 16px "Segoe UI", sans-serif';
+    ctx.fillText((k+1) + '  ' + DIFF[k].name, x, y - 2);
+    ctx.font = '13px "Segoe UI", sans-serif'; ctx.fillStyle = sel ? '#c9c3e0' : '#6a6488';
+    ctx.fillText(DIFF[k].cn + '  ·  ' + DIFF[k].gold + ' gold', x, y + 16);
+  }
+  const blink = (Math.sin(time*4) > -0.3);
+  if(blink) centerText('PRESS ENTER TO PLAY', H*0.87, 'bold 24px "Segoe UI", sans-serif', '#ffffff', 'rgba(255,255,255,.6)');
+  centerText('best score: ' + best, H*0.94, '14px "Segoe UI", sans-serif', '#7a7499');
+}
+function drawEnd(win){
+  overlay(0.8);
+  if(win){
+    centerText('VICTORY!', H*0.34, 'bold 64px "Segoe UI", sans-serif', '#5ad19a', 'rgba(90,209,154,.9)');
+    centerText('地城守住了 — your vault endures', H*0.34+50, '22px "Segoe UI", sans-serif', '#c9a6ff');
+  } else {
+    centerText('GAME OVER', H*0.34, 'bold 64px "Segoe UI", sans-serif', '#ff5d73', 'rgba(255,93,115,.9)');
+    centerText('英雄洗劫了你的宝库', H*0.34+50, '22px "Segoe UI", sans-serif', '#c9a6ff');
+  }
+  centerText('SCORE  ' + score, H*0.52, 'bold 30px "Segoe UI", sans-serif', '#ffe9a8');
+  centerText('best ' + best + '   ·   waves cleared ' + (win ? WAVES.length : waveIdx) + '/' + WAVES.length + '   ·   kills ' + kills,
+    H*0.59, '17px "Segoe UI", sans-serif', '#9d96bb');
+  const blink = (Math.sin(time*4) > -0.3);
+  if(blink) centerText('PRESS ENTER TO PLAY AGAIN', H*0.75, 'bold 22px "Segoe UI", sans-serif', '#ffffff', 'rgba(255,255,255,.6)');
+}
+function drawPause(){
+  overlay(0.65);
+  centerText('PAUSED', H*0.45, 'bold 56px "Segoe UI", sans-serif', '#c9c3e0');
+  centerText('press P to resume', H*0.53, '18px "Segoe UI", sans-serif', '#9d96bb');
+}
+
+// ---------- render: master ----------
+function draw(){
+  ctx.save();
+  if(shakeT > 0){
+    const m = shakeT * 14;
+    ctx.translate((Math.random()-0.5)*m, (Math.random()-0.5)*m);
+  }
+  drawGrid();
+  drawTraps();
+  drawHover();
+  const sorted = heroes.slice().sort((a,b) => a.y - b.y);
+  for(const h of sorted) drawHero(h);
+  drawProjectiles();
+  drawParticles();
+  ctx.restore();
+
+  drawHUD();
+  drawPalette();
+  if(state === 'play' || state === 'pause') drawBanner();
+  drawVignette();
+
+  if(state === 'title') drawTitle();
+  else if(state === 'pause') drawPause();
+  else if(state === 'over') drawEnd(false);
+  else if(state === 'win') drawEnd(true);
+}
+
+// ---------- loop ----------
+let last = performance.now();
+function frame(now){
+  let dt = Math.min(0.05, (now - last)/1000);
+  last = now;
+  dt *= speed;
+  update(dt);
+  draw();
+  requestAnimationFrame(frame);
+}
+reset();
+state = 'title';
+time = 0;
+requestAnimationFrame(frame);
+
+// ---------- debug hooks (used by automated tests) ----------
+window.__game = () => ({
+  state, gold, lives, score, best, kills,
+  wave: waveIdx+1, waveActive, prepT: Math.round(prepT*10)/10,
+  heroes: heroes.length, traps: traps.size, spawnedQ: spawnQ.length,
+  errors: window.__errors,
+});
+window.__start = () => { if(state==='title') state='play'; };
+window.__place = (type,x,y) => placeTrap(x,y,type);
+window.__select = t => { if(TRAPS[t]) selected = t; };
+window.__wave  = () => { if(state==='play' && !waveActive && prepT>0){ prepT = 0; startWave(); } };
+window.__speed = v => { speed = v; };
+</script>
 </body>
 </html>
