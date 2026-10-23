@@ -1,0 +1,1449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SEAT WARS 3D 智華館搶位大戰</title>
+<style>
+  html,body{margin:0;padding:0;background:#0e0b14;height:100%;overflow:hidden;
+    font-family:"Segoe UI",system-ui,sans-serif;color:#e8e4f2;}
+  #app{position:fixed;inset:0;}
+  canvas{display:block;}
+
+  /* ---------- HUD ---------- */
+  #hud{position:fixed;inset:0;pointer-events:none;z-index:10;}
+  .panel{background:rgba(14,11,20,.72);border:1px solid rgba(200,170,255,.22);
+    border-radius:10px;padding:9px 14px;backdrop-filter:blur(6px);}
+  #top{position:absolute;top:14px;left:14px;display:flex;gap:10px;align-items:center;}
+  #title{font-size:15px;font-weight:700;letter-spacing:.4px;color:#e5c98f;}
+  #title small{display:block;font-size:10px;color:#9a92ad;font-weight:400;letter-spacing:0;}
+
+  #scoreBox{position:absolute;top:14px;right:14px;text-align:right;min-width:250px;
+    padding:12px 18px;}
+  #scoreBox .lbl{font-size:12px;color:#9a92ad;letter-spacing:1.5px;}
+  #scoreBox #score{font-size:46px;font-weight:800;color:#ffd166;line-height:1.02;
+    text-shadow:0 3px 14px rgba(255,209,102,.28);}
+  #bar{height:15px;background:rgba(255,255,255,.10);border-radius:7px;overflow:hidden;margin-top:8px;
+    border:1px solid rgba(255,255,255,.12);}
+  #barFill{height:100%;width:0%;background:linear-gradient(90deg,#7fe0c3,#ffd166);
+    transition:width .18s linear;}
+  #clock{position:absolute;top:14px;left:50%;transform:translateX(-50%);
+    font-size:22px;font-weight:700;min-width:110px;text-align:center;}
+  #clock.low{color:#ff5d73;}
+
+  #batteryWrap{position:absolute;left:14px;top:62px;width:262px;padding:12px 16px;}
+  #batteryWrap .lbl{display:flex;justify-content:space-between;align-items:baseline;
+    font-size:12px;color:#9a92ad;letter-spacing:1.2px;margin-bottom:6px;}
+  #batVal{font-size:16px;font-weight:800;color:#e8e4f2;}
+  #batBar{height:20px;background:rgba(255,255,255,.10);border-radius:5px;overflow:hidden;
+    border:1px solid rgba(255,255,255,.14);}
+  #batFill{height:100%;width:60%;background:#7fe0c3;transition:width .2s linear;}
+  #batState{margin-top:5px;font-size:12px;font-weight:700;letter-spacing:.8px;}
+  #batState.double{color:#7fe0c3;}
+  #batState.single{color:#f2cc8f;}
+  #batState.flat{color:#ff5d73;}
+
+  #held{position:absolute;left:50%;transform:translateX(-50%);top:52px;
+    display:none;align-items:center;gap:9px;}
+  #held .dot{width:9px;height:9px;border-radius:50%;background:#ffd166;
+    box-shadow:0 0 12px #ffd166;animation:pulse 1s infinite;}
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.45;transform:scale(1.5);}}
+  #held .txt{font-size:13px;font-weight:700;color:#ffd166;}
+  #held .rate{font-size:11px;color:#9a92ad;}
+
+  #hint{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);
+    font-size:12px;color:#9a92ad;text-align:center;line-height:1.7;}
+  #hint b{color:#e5c98f;background:rgba(255,255,255,.08);padding:1px 7px;border-radius:4px;
+    font-family:Consolas,monospace;font-size:11px;}
+
+  #banner{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);
+    text-align:center;display:none;}
+  #banner .big{font-size:40px;font-weight:800;color:#ffd166;letter-spacing:1px;
+    text-shadow:0 4px 24px rgba(0,0,0,.8);}
+  #banner .sub{font-size:15px;color:#c9c3e0;margin-top:6px;}
+
+  /* ---------- overlays ---------- */
+  .screen{position:fixed;inset:0;background:rgba(10,8,16,.94);z-index:20;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;padding:28px;}
+  .screen h1{font-size:44px;margin:0 0 6px;color:#ffd166;letter-spacing:1px;}
+  .screen h2{font-size:14px;margin:0 0 22px;color:#9a92ad;letter-spacing:3px;font-weight:600;}
+  .screen p{max-width:520px;color:#b9b3c9;line-height:1.75;margin:0 0 8px;font-size:14px;}
+  .keys{margin:18px 0 4px;font-size:13px;color:#9a92ad;line-height:2.1;}
+  .keys b{color:#ffd166;background:rgba(255,255,255,.08);padding:2px 9px;border-radius:4px;
+    font-family:Consolas,monospace;}
+  button{margin-top:22px;background:#ffd166;color:#14161c;border:0;padding:13px 34px;
+    font-size:16px;font-weight:800;border-radius:7px;cursor:pointer;pointer-events:auto;
+    letter-spacing:.5px;}
+  button:hover{background:#ffe08a;transform:translateY(-1px);}
+  .hidden{display:none !important;}
+
+  /* ---------- rock-paper-scissors popup ---------- */
+  .rpsCard{background:rgba(22,17,34,.97);border:1px solid rgba(200,170,255,.30);
+    border-radius:16px;padding:34px 48px 30px;text-align:center;max-width:620px;
+    box-shadow:0 24px 80px rgba(0,0,0,.7);}
+  #rpsTitle{font-size:26px;margin:0 0 8px;color:#ffd166;letter-spacing:1.5px;}
+  #rpsMsg{font-size:14px;color:#b9b3c9;margin:0;line-height:1.7;max-width:none;}
+  .rpsRow{display:flex;gap:14px;justify-content:center;margin-top:26px;flex-wrap:wrap;}
+  .rpsBtn{margin-top:0;min-width:158px;font-size:16px;padding:18px 12px;
+    background:rgba(255,255,255,.10);color:#e8e4f2;letter-spacing:1.5px;
+    border:1px solid rgba(255,255,255,.16);}
+  .rpsBtn:hover{background:#ffd166;color:#14161c;transform:translateY(-2px);}
+  .rpsBtn:disabled{opacity:.45;cursor:default;transform:none;}
+  #rpsResult{margin-top:24px;font-size:21px;font-weight:800;min-height:28px;letter-spacing:.6px;}
+  #rpsResult.win{color:#7fe0c3;}
+  #rpsResult.lose{color:#ff5d73;}
+  #rpsResult.draw{color:#f2cc8f;}
+  #rpsHint{margin-top:14px;font-size:12px;color:#7d768f;}
+  #rpsHint b{color:#e5c98f;background:rgba(255,255,255,.08);padding:1px 7px;
+    border-radius:4px;font-family:Consolas,monospace;}
+
+  /* ---------- start-page scoring explainer ---------- */
+  .scoreCard{max-width:660px;margin:16px auto 0;text-align:left;
+    background:rgba(255,255,255,.05);border:1px solid rgba(200,170,255,.22);
+    border-radius:12px;padding:16px 26px 14px;}
+  .scTitle{font-size:12px;font-weight:800;letter-spacing:2.2px;color:#7fe0c3;
+    text-align:center;margin-bottom:11px;}
+  .scFormula{text-align:center;font-size:16px;font-weight:700;color:#ffd166;
+    font-family:Consolas,monospace;background:rgba(0,0,0,.38);border-radius:8px;
+    padding:10px 12px;margin-bottom:13px;letter-spacing:.3px;}
+  .scList{margin:0;padding-left:20px;font-size:13px;color:#b9b3c9;line-height:1.8;}
+  .scList li{margin-bottom:3px;}
+  .scList b{color:#e8e4f2;}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<div id="hud">
+  <div id="top" class="panel">
+    <div id="title">SEAT WARS 3D<small id="lvlName">智華館 CPD-1</small></div>
+  </div>
+
+  <div id="clock" class="panel">2:30</div>
+
+  <div id="scoreBox" class="panel">
+    <div class="lbl">SCORE</div>
+    <div id="score">0</div>
+    <div id="bar"><div id="barFill"></div></div>
+  </div>
+
+  <div id="batteryWrap" class="panel">
+    <div class="lbl"><span>LAPTOP BATTERY</span><span id="batVal">60%</span></div>
+    <div id="batBar"><div id="batFill"></div></div>
+    <div id="batState">×2 DOUBLE POINTS</div>
+  </div>
+
+  <div id="held"><span class="dot"></span>
+    <span><span class="txt" id="heldTitle">HOLDING A SEAT</span><br><span class="rate" id="heldRate">+0 / sec</span></span>
+  </div>
+
+  <div id="banner"><div class="big"></div><div class="sub"></div></div>
+
+  <div id="hint">
+    <b>WASD</b> move &nbsp; <b>Shift</b> sprint &nbsp;
+    <b>Hold E</b> claim / charge &nbsp; <b>Tap E</b> stand up &nbsp;
+    <b>Q</b> leave / pick up bag &nbsp; <b>E</b> on an occupied seat = rock-paper-scissors
+  </div>
+</div>
+
+<!-- rock-paper-scissors push contest -->
+<div id="rpsScreen" class="screen hidden">
+  <div class="rpsCard">
+    <h1 id="rpsTitle">ROCK · PAPER · SCISSORS</h1>
+    <p id="rpsMsg">Fight them for the seat.</p>
+    <div class="rpsRow">
+      <button class="rpsBtn" data-move="rock">ROCK</button>
+      <button class="rpsBtn" data-move="paper">PAPER</button>
+      <button class="rpsBtn" data-move="scissors">SCISSORS</button>
+    </div>
+    <div id="rpsResult"></div>
+    <div id="rpsHint">or press <b>R</b> / <b>P</b> / <b>S</b></div>
+  </div>
+</div>
+
+<div id="titleScreen" class="screen">
+  <h1>SEAT WARS 3D</h1>
+  <h2>智華館搶位大戰</h2>
+  <p>Stake out a seat in the Learning Commons or the Main Library and hold it —
+     <b>90 seconds</b> on the clock. The red crowd will try to take it off you.</p>
+
+  <div class="scoreCard">
+    <div class="scTitle">HOW SCORING WORKS</div>
+    <div class="scFormula">points per second = seat value × battery × hold bonus</div>
+    <ul class="scList">
+      <li><b>Points tick every second</b> you hold a seat, and stop the instant you
+          stand up or someone takes it.</li>
+      <li><b>Battery above 50% = DOUBLE points.</b> Below that you earn single.
+          Chargers are marked with a small <b>⚡ bolt</b> floating above them —
+          hold E for 1.2s to get +30.</li>
+      <li><b>Hold longer, earn faster.</b> The bonus climbs up to <b>×3</b> over 15
+          seconds of sitting still.</li>
+      <li><b>Seat values: ×1, ×1.25, ×1.5.</b> Press <b>Q</b> to leave your bag on
+          one seat and go sit somewhere else — <b>two seats at once is the max</b>.</li>
+      <li>Someone already sitting? <b>Hold E to challenge</b> — it's rock-paper-scissors.</li>
+    </ul>
+  </div>
+
+  <div class="keys">
+    <b>WASD</b> move &nbsp; <b>Shift</b> sprint &nbsp;
+    <b>Hold E</b> to claim or charge &nbsp; <b>Tap E</b> to stand up &nbsp;
+    <b>Q</b> to leave / pick up your bag
+  </div>
+  <button id="btnStart">START</button>
+</div>
+
+<div id="endScreen" class="screen hidden">
+  <h1 id="endTitle">LEVEL CLEAR</h1>
+  <h2 id="endSub"></h2>
+  <p id="endMsg"></p>
+  <div class="keys" id="endStats"></div>
+  <button id="btnNext">CONTINUE</button>
+</div>
+
+<script src="three.min.js"></script>
+<script>
+'use strict';
+/* ============================================================
+   SEAT WARS 3D — 智華館搶位大戰
+   3D rebuild of Seat Wars. All level data, AI and staff logic is
+   preserved from the original; only the render layer changed.
+   NEW SCORING: points tick every SECOND you hold a seat, and stop
+   the instant a rival takes it. Hold longer = higher rate.
+   ============================================================ */
+
+const W = 960, PH = 552;            // world floor is W x PH, mapped to X x Z
+const TAU = Math.PI * 2;
+const clampi = (v,a,b) => v<a?a:(v>b?b:v);
+
+// ---------- audio ----------
+let actx = null;
+function audio(){ if(!actx){ try{ actx = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } return actx; }
+function tone(f1,f2,dur,type,vol){
+  const a = audio(); if(!a) return;
+  const o = a.createOscillator(), g = a.createGain();
+  o.type = type||'square'; o.frequency.setValueAtTime(f1,a.currentTime);
+  if(f2) o.frequency.exponentialRampToValueAtTime(Math.max(30,f2), a.currentTime+dur);
+  g.gain.setValueAtTime(vol||0.05, a.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.0001, a.currentTime+dur);
+  o.connect(g); g.connect(a.destination); o.start(); o.stop(a.currentTime+dur);
+}
+function noise(dur,vol){
+  const a = audio(); if(!a) return;
+  const n = a.sampleRate*dur, buf = a.createBuffer(1,n,a.sampleRate), d = buf.getChannelData(0);
+  for(let i=0;i<n;i++) d[i] = (Math.random()*2-1) * (1-i/n);
+  const s = a.createBufferSource(), g = a.createGain(), f = a.createBiquadFilter();
+  f.type = 'bandpass'; f.frequency.value = 1800;
+  s.buffer = buf; s.connect(f); f.connect(g); g.connect(a.destination);
+  g.gain.value = vol||0.12; s.start();
+}
+const sClaim  = () => tone(520,780,0.12,'triangle',0.06);
+const sStand  = () => tone(400,260,0.08,'square',0.04);
+const sCharge = () => tone(300,900,0.25,'sine',0.05);
+const sShush  = () => { noise(0.5,0.14); tone(210,120,0.4,'sawtooth',0.04); };
+const sStun   = () => tone(160,60,0.5,'square',0.06);
+const sBag    = () => tone(240,340,0.1,'sine',0.04);
+const sTick   = () => tone(1000,1000,0.04,'sine',0.022);
+const sWin    = () => { [523,659,784,1047].forEach((f,i)=>setTimeout(()=>tone(f,f,0.2,'triangle',0.06), i*120)); };
+const sLose   = () => { [392,311,233,175].forEach((f,i)=>setTimeout(()=>tone(f,f,0.28,'sawtooth',0.05), i*170)); };
+
+// ---------- level data (unchanged from the original) ----------
+function buildLevel1(){                       // CHI WAH LEARNING COMMONS, CPD-1
+  const L = {name:'Chi Wah Learning Commons', cn:'智華館 CPD-1', floor:0x2e2a3a,
+             carpet:0x332c3d, target:180, rivals:40, staffSpeed:62,
+             silentBoost:1.7, seats:[], plugs:[], solids:[], staff:[], decor:[]};
+  const roomCap = [13,5,10,5,7,13];
+  for(let k=0;k<6;k++){
+    const rx = 46 + k*86, booked = (k===1 || k===3);
+    L.solids.push({x:rx, y:6, w:76, h:76, kind:'room'});
+    L.decor.push({kind:'roomlabel', x:rx+6, y:18, text:'Rm '+(k+1), cap:roomCap[k], booked});
+    if(!booked) L.seats.push({x:rx+38, y:60, type:'booth', mult:1.5, owner:null, bag:false});
+  }
+  L.decor.push({kind:'zone', x:648, y:6, w:306, h:330, color:0x232032,
+                label:'QUIET STUDY 请保持安静', labelColor:0x8fa8ff});
+  for(let k=0;k<4;k++){
+    const ty = 48 + k*72;
+    L.solids.push({x:672, y:ty, w:256, h:20, kind:'table'});
+    for(let s=0;s<4;s++){
+      L.seats.push({x:690+s*62, y:ty+34, type:'quiet', mult:1.25, owner:null, bag:(k===2&&s===2)});
+    }
+  }
+  for(let k=0;k<2;k++){
+    const ty = 250 + k*150;
+    L.solids.push({x:200, y:ty, w:300, h:22, kind:'table'});
+    for(let s=0;s<3;s++){
+      L.seats.push({x:235+s*95, y:ty-18, type:'desk', mult:1, owner:null, bag:false});
+      L.seats.push({x:235+s*95, y:ty+42, type:'desk', mult:1, owner:null, bag:(k===0&&s===1)});
+    }
+    L.plugs.push({x:190, y:ty+11, user:null});
+    L.plugs.push({x:510, y:ty+11, user:null});
+  }
+  for(let k=0;k<5;k++){
+    // NOTE: was 60 + k*58 — that put the top iMac station directly on top of
+    // the study rooms (y60-80 inside y6-82), walling off the 1.5x booth seats.
+    // Shifted the whole row below the room block.
+    const wy = 96 + k*52;
+    L.solids.push({x:44, y:wy, w:44, h:20, kind:'mac'});
+    L.decor.push({kind:'mac', x:52, y:wy-14});
+    L.seats.push({x:106, y:wy+10, type:'mac', mult:1, owner:null, bag:false});
+  }
+  for(let k=0;k<4;k++){
+    // NOTE: booth rows were 74px apart with 60px-deep solids, so each row's
+    // seat (+72) landed inside the NEXT row's solid and its nav cell failed
+    // the 10px pathfinder probe. Re-spaced: 96px rows, 44px depth, seat +60.
+    const bx = 660 + (k%2)*140, by = 380 + Math.floor(k/2)*96;
+    L.solids.push({x:bx, y:by, w:120, h:44, kind:'booth'});
+    L.seats.push({x:bx+60, y:by+60, type:'booth', mult:1.5, owner:null, bag:false});
+  }
+  const pillar = [[370,180],[560,180],[370,430],[600,500]];
+  for(const [px,py] of pillar){
+    L.solids.push({x:px, y:py, w:22, h:22, kind:'pillar'});
+    L.plugs.push({x:px+34, y:py+11, user:null});
+  }
+  L.decor.push({kind:'spiral', x:70, y:520});
+  L.decor.push({kind:'printer', x:560, y:470});
+  L.spawn = {x:120, y:500};
+  L.staff = [{path:[[652,40],[652,320]], x:652, y:40, i:0},
+             {path:[[170,430],[560,430],[560,225],[170,225]], x:170, y:430, i:0}];
+  return L;
+}
+function buildLevel2(){                       // MAIN LIBRARY 2/F
+  const L = {name:'Main Library 2/F', cn:'主圖書館 2樓', floor:0x2a2422,
+             carpet:0x241f1d, target:150, rivals:28, staffSpeed:78,
+             silentBoost:2.0, seats:[], plugs:[], solids:[], staff:[], decor:[]};
+  L.decor.push({kind:'zone', x:6, y:6, w:520, h:196, color:0x221d1b,
+                label:'OPEN STACKS  開放書庫', labelColor:0xd9b38c});
+  for(let k=0;k<4;k++){
+    const sx = 60 + k*120;
+    L.solids.push({x:sx, y:44, w:44, h:150, kind:'shelf'});
+    L.decor.push({kind:'shelf', x:sx, y:44, w:44, h:150});
+    L.seats.push({x:sx+22, y:214, type:'desk', mult:1, owner:null, bag:(k===2)});
+  }
+  L.decor.push({kind:'zone', x:560, y:6, w:394, h:330, color:0x262022,
+                label:'SILENT READING  靜默閱讀區', labelColor:0xff9c9c});
+  for(let k=0;k<4;k++){
+    const ty = 52 + k*74;
+    L.solids.push({x:584, y:ty, w:340, h:20, kind:'table'});
+    for(let s=0;s<5;s++){
+      const hasPlug = (s%3===0);
+      L.seats.push({x:604+s*76, y:ty+34, type:'lamp', mult:1, owner:null, bag:(k===3&&s===4)});
+      if(hasPlug) L.plugs.push({x:604+s*76, y:ty+14, user:null});
+    }
+  }
+  L.decor.push({kind:'zone', x:6, y:238, w:520, h:300, color:0x1e2230,
+                label:'24-HOUR STUDY AREA  24小時自修區', labelColor:0x7fe0c3});
+  for(let k=0;k<6;k++){
+    const cx = 40 + (k%3)*166, cy = 280 + Math.floor(k/3)*120;
+    L.solids.push({x:cx, y:cy, w:110, h:18, kind:'table'});
+    L.solids.push({x:cx-6, y:cy-40, w:6, h:58, kind:'wall'});
+    L.solids.push({x:cx+110, y:cy-40, w:6, h:58, kind:'wall'});
+    L.seats.push({x:cx+55, y:cy+34, type:'cubicle', mult:1.25, owner:null, bag:false});
+  }
+  L.solids.push({x:740, y:470, w:180, h:26, kind:'desk2'});
+  L.decor.push({kind:'circ', x:756, y:506});
+  L.decor.push({kind:'spiral', x:70, y:520});
+  L.spawn = {x:120, y:500};
+  L.staff = [{path:[[570,320],[570,40],[935,40],[935,320]], x:570, y:320, i:0},
+             {path:[[120,440],[480,440],[480,60],[120,60]], x:120, y:440, i:0}];
+  return L;
+}
+const LEVELS = [buildLevel1, buildLevel2];
+
+// ---------- state ----------
+let level, levelIdx, player, rivals, staff, floaters, keys;
+let state = 'title';                 // title | play | lvclear | gameover | win
+let clock = 0, roundLen = 90, score = 0, best = 0;   // was 150s — shortened to hard-mode
+let heldInfo = { active:false, rate:0, hold:0, bodyRate:0, bagRate:0 };
+let rpsCtx = null;                     // active rock-paper-scissors contest
+
+try { best = +(localStorage.getItem('seatwars3d_best')||0); } catch(e){}
+
+function loadLevel(i){
+  level = LEVELS[i](); levelIdx = i;
+  buildNav();                              // nav grid must exist before spawning
+  player = {x:level.spawn.x, y:level.spawn.y, r:11, battery:60, seat:null,
+            bagSeat:null, stun:0, action:0, actionKind:null, actionSeat:null, facing:0,
+            pushCooldown:0, holdTime:0, rateAcc:0, lastRate:0};
+  rivals = [];
+  // spread rivals over actual walkable floor — the old 9-wide grid would stack
+  // 38 NPCs on top of each other in one corner
+  const cells = [];
+  for(let gy=0; gy<GH; gy++) for(let gx=0; gx<GW; gx++)
+    if(walk[gy*GW+gx]) cells.push([gx*CELL+8, gy*CELL+8]);
+  const n = level.rivals;
+  const stride = Math.max(1, Math.floor(cells.length / Math.max(1, n)));
+  for(let k=0;k<n;k++){
+    const c = cells[(k*stride + 11) % cells.length] || cells[0];
+    rivals.push({x: c[0], y: c[1], r:10,
+      speed: 88 + Math.random()*22, color: '#e23b3b',
+      aggressive: (k % 6 === 0),              // ~1 in 6 actively hunts you
+      state:'wander', path:[], target:null, seat:null, sitT:0, eyeT:0,
+      facing:0, stun:0, claimT:0, disturbT:0, waitT:Math.random()*2});
+  }
+  staff = level.staff.map(s => ({x:s.x, y:s.y, path:s.path, i:0, mode:'patrol',
+    nav:null, navT:0, tx:null, ty:null, shushT:0, speed:level.staffSpeed}));
+  floaters = []; keys = {};
+  clock = 0; score = 0;
+  rpsCtx = null;
+  // never inherit a stale overlay from a previous round
+  $('endScreen').classList.add('hidden');
+  $('rpsScreen').classList.add('hidden');
+  if(renderer){ buildWorld(); spawnDynamic(); }
+  setBanner('FIND A SEAT', 'Hold E near a seat to claim it', 3);
+}
+
+// ---------- helpers ----------
+function seatAt(x,y,rad){
+  let best = null, bd = rad||26;
+  for(const s of level.seats){
+    const d = Math.hypot(s.x-x, s.y-y);
+    if(d < bd){ bd = d; best = s; }
+  }
+  return best;
+}
+function plugAt(x,y,rad){
+  let best = null, bd = rad||26;
+  for(const p of level.plugs){
+    const d = Math.hypot(p.x-x, p.y-y);
+    if(d < bd){ bd = d; best = p; }
+  }
+  return best;
+}
+function solidAt(x,y,r){
+  for(const s of level.solids){
+    // Study-room enclosures are walk-in glass boxes, not filled blocks.
+    // Treating them as solid would wall their 1.5x seats off permanently —
+    // the player could never get within the 30px claim radius.
+    if(s.kind === 'room') continue;
+    if(x+r > s.x && x-r < s.x+s.w && y+r > s.y && y-r < s.y+s.h) return s;
+  }
+  return null;
+}
+function move(ent, dx, dy){
+  const nx = ent.x + dx;
+  if(!solidAt(nx, ent.y, ent.r)) ent.x = clampi(nx, ent.r+4, W-ent.r-4);
+  const ny = ent.y + dy;
+  if(!solidAt(ent.x, ny, ent.r)) ent.y = clampi(ny, ent.r+4, PH-ent.r-4);
+}
+function floater(x,y,text,color){ floaters.push({x, y, text, color, t:0, life:1.2}); }
+function inSilentZone(x,y){
+  if(levelIdx===0) return x > 648 && y < 336;
+  return true;
+}
+
+// ---------- navigation grid ----------
+const CELL = 16, GW = Math.ceil(W/CELL), GH = Math.ceil(PH/CELL);
+const DIRS = [[1,0],[-1,0],[0,1],[0,-1]];
+let walk = null;
+function buildNav(){
+  walk = new Uint8Array(GW*GH);
+  for(let gy=0; gy<GH; gy++) for(let gx=0; gx<GW; gx++){
+    const x = gx*CELL+8, y = gy*CELL+8;
+    walk[gy*GW+gx] = (y > PH-6 || solidAt(x,y,10)) ? 0 : 1;
+  }
+}
+function cellIdx(px,py){
+  return clampi(Math.floor(py/CELL),0,GH-1)*GW + clampi(Math.floor(px/CELL),0,GW-1);
+}
+function navPath(sx,sy,tx,ty){
+  if(!walk) return null;
+  const s = cellIdx(sx,sy), t = cellIdx(tx,ty);
+  if(!walk[s] || !walk[t]) return null;
+  const prev = new Int32Array(GW*GH).fill(-2);
+  prev[s] = -1;
+  const q = [s];
+  for(let qi=0; qi<q.length && prev[t]===-2; qi++){
+    const i = q[qi], x = i%GW, y = (i/GW)|0;
+    for(const [dx,dy] of DIRS){
+      const nx = x+dx, ny = y+dy;
+      if(nx<0||ny<0||nx>=GW||ny>=GH) continue;
+      const ni = ny*GW+nx;
+      if(prev[ni]!==-2 || !walk[ni]) continue;
+      prev[ni] = i; q.push(ni);
+    }
+  }
+  if(prev[t] === -2) return null;
+  const path = []; let i = t;
+  while(i !== -1){ path.push({x:(i%GW)*CELL+8, y:Math.floor(i/GW)*CELL+8}); i = prev[i]; }
+  path.reverse(); path.shift();
+  return path;
+}
+function followPath(ent, path, spd, dt){
+  const wp = path && path[0];
+  if(!wp) return true;
+  const d = Math.hypot(wp.x-ent.x, wp.y-ent.y);
+  if(d < 7){ path.shift(); return !path.length; }
+  const a = Math.atan2(wp.y-ent.y, wp.x-ent.x);
+  ent.facing = a;
+  move(ent, Math.cos(a)*spd*dt, Math.sin(a)*spd*dt);
+  return false;
+}
+
+// ---------- NEW SCORING ----------
+// Points accrue every SECOND you hold a seat. The rate climbs the longer you
+// stay put (up to 3x), so guarding is worth more than grabbing and running.
+// It stops dead the moment a rival takes your seat, or when you stand up.
+const HOLD_BONUS_CAP = 2;             // +2x after HOLD_SECONDS
+const HOLD_SECONDS   = 15;
+const BAG_FACTOR     = 1;             // bag seat earns flat: seat.mult / sec
+const BATTERY_FULL   = 50;            // above this you earn DOUBLE, below it single
+function batteryBonus(){ return player.battery > BATTERY_FULL ? 2 : 1; }
+function currentRate(){
+  const s = player.seat; if(!s) return 0;
+  const holdBonus = 1 + Math.min(HOLD_BONUS_CAP, player.holdTime / HOLD_SECONDS);
+  return Math.max(1, Math.round(s.mult * batteryBonus() * holdBonus));
+}
+function resetHold(){
+  player.holdTime = 0; player.rateAcc = 0; player.lastRate = 0;
+  heldInfo.active = false; heldInfo.rate = 0; heldInfo.hold = 0;
+}
+function bagRate(){
+  const s = player.bagSeat;
+  if(!s || s.bagOwner !== player) return 0;
+  if(s === player.seat) return 0;          // same seat as your body: no double dip
+  return Math.max(1, Math.round(s.mult * BAG_FACTOR));
+}
+function tickScore(dt){
+  const bodyRate = player.seat ? currentRate() : 0;
+  const bRate    = bagRate();
+  const total    = bodyRate + bRate;
+  if(total <= 0){ heldInfo.active = false; heldInfo.rate = 0;
+                  heldInfo.bodyRate = 0; heldInfo.bagRate = 0; return; }
+  heldInfo.active   = true;
+  heldInfo.hold     = player.holdTime;
+  heldInfo.bodyRate = bodyRate;
+  heldInfo.bagRate  = bRate;
+  player.rateAcc += dt;
+  while(player.rateAcc >= 1){
+    player.rateAcc -= 1;
+    if(bodyRate){
+      score += bodyRate;
+      player.lastRate = bodyRate;
+      heldInfo.rate = total;
+      sTick();
+      floater(player.seat.x, player.seat.y-24, '+'+bodyRate,
+              batteryBonus() > 1 ? '#7fe0c3' : '#f2cc8f');
+    }
+    if(bRate){                       // your bag keeps earning while you're away
+      score += bRate;
+      heldInfo.rate = total;
+      floater(player.bagSeat.x, player.bagSeat.y-24, '+'+bRate, '#79e8ff');
+    }
+  }
+}
+
+// ---------- player actions ----------
+function claimSeat(){
+  const s = seatAt(player.x, player.y, 30);
+  if(!s) return;
+  if(s.owner && s.owner !== player){ defend(s); return; }
+  if(s.bag){
+    s.bag = false; s.owner = player; player.seat = s;
+    resetHold(); player.action = 0; sBag(); floater(s.x, s.y-26, 'Bag shoved!', '#f2cc8f');
+    return;
+  }
+  s.owner = player; player.seat = s; resetHold(); player.action = 0;
+  sClaim(); floater(s.x, s.y-26, 'SEAT!', '#ffd166');
+}
+function defend(s){
+  if(!s || player.actionKind === 'defend') return;
+  player.actionKind = 'defend'; player.actionSeat = s; player.action = 0;
+}
+function standUp(){
+  if(player.seat){ player.seat.owner = null; player.seat = null; resetHold(); sStand(); }
+}
+
+// ---------- BAG: hold a seat with an object instead of your body ----------
+// Max two seats at once = 1 bag seat + 1 seat you're sitting on.
+function tryBag(){
+  // standing beside your own bag -> pick it up again
+  if(player.bagSeat && !player.seat){
+    const s = player.bagSeat;
+    if(Math.hypot(s.x - player.x, s.y - player.y) < 36){
+      s.bagOwner = null; player.bagSeat = null;
+      sBag(); floater(s.x, s.y-26, 'BAG PICKED UP', '#7fe0c3');
+      return true;
+    }
+    floater(player.x, player.y-30, 'your bag is on that seat', '#9a92ad');
+    return false;
+  }
+  // seated -> leave the bag here; this MOVES any earlier bag, so you never
+  // hold more than one bag seat + one body seat = two seats max
+  if(player.seat){
+    const s = player.seat;
+    if(player.bagSeat === s){ floater(s.x, s.y-26, 'bag already here', '#9a92ad'); return false; }
+    if(player.bagSeat) player.bagSeat.bagOwner = null;
+    player.bagSeat = s; s.bagOwner = player;
+    sBag(); floater(s.x, s.y-26, 'BAG LEFT — SEAT HELD', '#ffd166');
+    return true;
+  }
+  floater(player.x, player.y-30, 'sit down first, then leave your bag', '#9a92ad');
+  return false;
+}
+// a rival rips your bag off the seat
+function ripBag(s){
+  if(s && s.bagOwner === player){
+    player.bagSeat = null; s.bagOwner = null;
+    floater(s.x, s.y-30, 'BAG THROWN OFF!', '#ff5d73');
+    return true;
+  }
+  return false;
+}
+
+// ============================================================
+//  ROCK · PAPER · SCISSORS — used to push someone aside / hold them off
+//  win  -> you get the seat (or keep it)
+//  lose -> you don't; you're locked out of challenging for a moment
+// ============================================================
+const RPS_MOVES = ['rock','paper','scissors'];
+const RPS_NAME  = { rock:'ROCK', paper:'PAPER', scissors:'SCISSORS' };
+const RPS_GLYPH = { rock:'ROCK ✊', paper:'PAPER ✋', scissors:'SCISSORS ✌' };
+const sRpsWin  = () => { tone(523,784,0.16,'triangle',0.06);
+                         setTimeout(()=>tone(1047,1047,0.13,'triangle',0.05),95); };
+const sRpsLose = () => tone(392,247,0.30,'sawtooth',0.05);
+const sRpsDraw = () => tone(440,440,0.20,'square',0.04);
+
+// pure outcome so it's testable headless: 1 win, -1 loss, 0 draw
+function rpsOutcome(mine, theirs){
+  const d = (RPS_MOVES.indexOf(mine) - RPS_MOVES.indexOf(theirs) + 3) % 3;
+  return d === 0 ? 0 : (d === 1 ? 1 : -1);
+}
+function findPushTarget(s){
+  if(!s) return null;
+  if(s.owner && s.owner.state) return s.owner;                 // they're sitting there
+  return rivals.find(r => r.state === 'steal' && r.target === s &&
+                          Math.hypot(r.x-player.x, r.y-player.y) < 56) || null;
+}
+function openRPS(s){
+  const rival = findPushTarget(s);
+  if(!rival){                                                  // nobody left to duel
+    player.actionKind = null; player.actionSeat = null; player.action = 0;
+    return;
+  }
+  rpsCtx = { seat:s, rival, mode:(player.seat === s ? 'defend' : 'attack') };
+  player.actionKind = null; player.actionSeat = null; player.action = 0;
+  $('rpsTitle').textContent = rpsCtx.mode === 'defend'
+    ? 'DEFEND YOUR SEAT' : 'CHALLENGE FOR THE SEAT';
+  $('rpsMsg').textContent = rpsCtx.mode === 'defend'
+    ? 'Someone is reaching for your seat. Win the hand to shove them back off — lose it and they keep coming.'
+    : 'Someone is already sitting here. Win the hand to push them out; lose it and they keep the seat.';
+  const res = $('rpsResult'); res.textContent = ''; res.className = '';
+  document.querySelectorAll('.rpsBtn').forEach(b => { b.disabled = false; });
+  $('rpsScreen').classList.remove('hidden');
+  state = 'rps';                                               // freezes the world
+}
+function playRPS(mine){
+  if(state !== 'rps' || !rpsCtx) return;
+  if($('rpsResult').textContent) return;                       // already thrown
+  const theirs = RPS_MOVES[Math.floor(Math.random()*3)];
+  const out = rpsOutcome(mine, theirs);
+  const res = $('rpsResult');
+  document.querySelectorAll('.rpsBtn').forEach(b => { b.disabled = true; });
+  res.className = out === 1 ? 'win' : out === -1 ? 'lose' : 'draw';
+  res.textContent = 'YOU ' + RPS_GLYPH[mine] + '  vs  ' + RPS_GLYPH[theirs] + '  —  ' +
+                    (out === 1 ? 'YOU WIN!' : out === -1 ? 'YOU LOSE' : 'DRAW');
+  if(out === 1) sRpsWin(); else if(out === -1) sRpsLose(); else sRpsDraw();
+  setTimeout(() => closeRPS(out), 1200);
+}
+function closeRPS(out){
+  const ctx = rpsCtx; rpsCtx = null;
+  $('rpsScreen').classList.add('hidden');
+  if(state === 'rps') state = 'play';
+  if(!ctx) return;
+  if(out === 1) pushWin(ctx);
+  else         pushFail(ctx, out);
+}
+function pushWin(ctx){
+  const s = ctx.seat, rival = ctx.rival;
+  rival.stun = 1.7; rival.state = 'wander'; rival.target = null;
+  rival.path = []; rival.waitT = 0.8; rival.sitT = 0; rival.eyeT = 0;
+  if(rival.seat === s) rival.seat = null;
+  if(s.owner === rival) s.owner = null;
+  player.pushCooldown = 0;
+  sStun(); floater(rival.x, rival.y-26, 'PUSHED ASIDE!', '#7fe0c3');
+  if(ctx.mode === 'attack'){                 // you won the hand -> the seat is yours
+    s.owner = player; player.seat = s; resetHold();
+    sClaim(); floater(s.x, s.y-26, 'SEAT TAKEN!', '#ffd166');
+  }
+}
+function pushFail(ctx, out){
+  player.pushCooldown = 1.6;                 // can't just spam challenges
+  player.action = 0; player.actionKind = null; player.actionSeat = null;
+  const s = ctx.seat;
+  if(out === -1){
+    floater(s.x, s.y-30, 'they kept the seat!', '#ff5d73');
+    if(ctx.mode === 'defend') floater(player.x, player.y-30, 'too slow!', '#ff5d73');
+  } else {
+    floater(s.x, s.y-30, 'draw — they held on', '#f2cc8f');
+  }
+}
+
+function chargeStart(){
+  const p = plugAt(player.x, player.y, 34);
+  if(p && !p.user){ player.actionKind = 'charge'; p.user = player; return; }
+  player.actionKind = 'claim';
+}
+function releaseAction(){
+  if(player.actionKind === 'charge'){
+    const p = plugAt(player.x, player.y, 34);
+    if(p && p.user === player) p.user = null;
+  }
+  // pushing someone aside is decided by the rock-paper-scissors popup now,
+  // so there is nothing to resolve here — releasing just cancels the charge-up
+  player.actionKind = null; player.actionSeat = null; player.action = 0;
+}
+// shush()/staff-retreat mechanic REMOVED by request — staff now just patrol.
+
+// ---------- update ----------
+function updatePlayer(dt){
+  if(player.stun > 0){ player.stun -= dt; return; }
+  if(player.pushCooldown > 0) player.pushCooldown -= dt;
+  const held = keys['e'] || keys[' '];
+  if(held && player.actionKind === null){
+    const nearSeat = seatAt(player.x, player.y, 30);
+    // A rival is going for MY seat -> challenge them, don't stand up and throw
+    // away the point stream you're protecting.
+    const thief = player.seat && rivals.find(r =>
+      (r.state === 'steal' && r.target === player.seat || r.seat === player.seat && r.state === 'sit') &&
+      Math.hypot(r.x-player.x, r.y-player.y) < 54);
+    if(thief){
+      if(player.pushCooldown <= 0) defend(player.seat);
+      // cooling down after a lost hand: hold off, but DON'T stand up
+    }
+    else if(player.seat)  standUp();
+    else if(nearSeat && nearSeat.owner && nearSeat.owner.state){
+      if(player.pushCooldown <= 0) defend(nearSeat);
+    }
+    else chargeStart();
+  }
+  if(player.actionKind){
+    player.action += dt;
+    const need = player.actionKind === 'charge' ? 1.2 :
+                 player.actionKind === 'defend' ? 0.42 : 0.6;
+    if(player.actionKind === 'claim' && (!player.actionSeat ||
+        seatAt(player.x,player.y,30) !== player.actionSeat)) player.actionSeat = seatAt(player.x,player.y,30);
+    if(player.action >= need){
+      if(player.actionKind === 'charge'){
+        player.battery = Math.min(100, player.battery + 30);
+        const p = plugAt(player.x, player.y, 34); if(p) p.user = null;
+        sCharge(); floater(player.x, player.y-30, 'CHARGED +30', '#7fe0c3');
+      } else if(player.actionKind === 'claim'){
+        claimSeat();
+      } else {
+        // a push contest is won or lost in rock-paper-scissors, not on a timer
+        if(player.actionSeat) openRPS(player.actionSeat);
+        else releaseAction();
+      }
+    }
+  }
+  if(!held){ if(player.actionKind) releaseAction(); }
+
+  let dx=0, dy=0;
+  if(keys['w']||keys['arrowup'])    dy-=1;
+  if(keys['s']||keys['arrowdown'])  dy+=1;
+  if(keys['a']||keys['arrowleft'])  dx-=1;
+  if(keys['d']||keys['arrowright']) dx+=1;
+  if(dx||dy){
+    const n = Math.hypot(dx,dy);
+    const sprinting = (keys['shift']);
+    let spd = 130;
+    if(sprinting){ spd *= 1.35; }
+    if(player.seat && !player.action) spd *= 0.75;
+    if(player.action) spd *= 0.5;
+    // sprint is no longer "noisy" — that penalty belonged to the shush mechanic
+    player.moving = true;
+    move(player, dx/n*spd*dt, dy/n*spd*dt);
+    player.facing = Math.atan2(dy,dx);
+    if(player.actionKind && player.actionKind!=='defend') player.action = 0;
+  }
+}
+
+function updateRivals(dt){
+  for(const r of rivals){
+    if(r.stun > 0){ r.stun -= dt; continue; }
+    if(r.waitT > 0){ r.waitT -= dt; continue; }
+    if(r.state === 'wander'){
+      // pick a destination and PATH there — straight-line movement was walking
+      // rivals straight into tables and pillars and leaving them stuck
+      if(!r.path || !r.path.length){
+        if(Math.random() < 0.75){
+          // gun specifically for the player's bag seat when there is one
+          const mine = (player.bagSeat && player.bagSeat.bagOwner === player)
+                       ? [player.bagSeat] : [];
+          const free = level.seats.filter(s => !s.owner && !s.bag && mine.indexOf(s) < 0);
+          let s = null;
+          if(mine.length && Math.random() < 0.6)          s = mine[0];
+          else if(free.length)                            s = free[Math.floor(Math.random()*free.length)];
+          if(s){
+            const p = navPath(r.x, r.y, s.x, s.y);
+            if(p && p.length){ r.target = s; r.state='toSeat'; r.path = p; r.claimT = 0; continue; }
+          }
+        }
+        const p = navPath(r.x, r.y, 60+Math.random()*(W-120), 40+Math.random()*(PH-90));
+        r.path = p || [];
+        r.waitT = r.path.length ? 0 : 2 + Math.random()*2;
+      } else followPath(r, r.path, r.speed*0.85, dt);
+    }
+    else if(r.state === 'toSeat'){
+      const s = r.target;
+      if(!s || s.owner || s.bag){ r.state='wander'; r.target=null; r.path=[]; r.waitT=1; continue; }
+      const arrived = followPath(r, r.path, r.speed, dt);
+      if(arrived || Math.hypot(s.x-r.x, s.y-r.y) < 18){
+        r.claimT += dt;
+        if(r.claimT > 1.0){ ripBag(s); s.owner = r; r.seat = s; r.state='sit'; r.sitT=0; r.claimT=0; r.path=[]; }
+      }
+    }
+    else if(r.state === 'sit'){
+      r.sitT  = (r.sitT  || 0) + dt;
+      r.eyeT  = (r.eyeT  || 0) + dt;
+      if(r.eyeT >= (r.aggressive ? 8 : 45)){
+        r.eyeT = 0;
+        // only the AGGRESSOR subset hunts your seat. With a room full of
+        // rivals, letting everyone do it fires 4+ thefts a second at you.
+        if(r.aggressive && player.seat && player.actionKind !== 'defend' &&
+           Math.random() < 0.7){
+          r.target = player.seat;
+          r.path = navPath(r.x, r.y, player.seat.x, player.seat.y) || [];
+          if(r.path.length){ r.state='steal'; r.disturbT = 0; continue; }
+        }
+        const victims = rivals.filter(o => o!==r && o.seat &&
+                                  Math.hypot(o.x-r.x, o.y-r.y) < 220);
+        if(r.aggressive && victims.length && Math.random() < 0.5){
+          r.target = victims[0].seat;
+          r.path = navPath(r.x, r.y, victims[0].seat.x, victims[0].seat.y) || [];
+          if(r.path.length){ r.state='steal'; r.disturbT = 0; continue; }
+        }
+      }
+      if(r.sitT > 45){                      // stayed long enough — get up
+        r.sitT = 0;
+        if(r.seat) r.seat.owner = null;
+        r.seat = null; r.state='wander'; r.waitT = 0.5; r.path = [];
+      }
+    }
+    else if(r.state === 'steal'){
+      const s = r.target;
+      const valid = s && s.owner && s.owner !== r &&
+                    (s.owner === player || s.owner.state !== undefined);
+      if(!valid){                           // owner stood up / seat already gone
+        r.state='wander'; r.path=[]; r.target=null; r.waitT=1; continue;
+      }
+      const arrived = followPath(r, r.path, r.speed, dt);
+      const d = Math.hypot(s.x-r.x, s.y-r.y);
+      if(arrived || d < 18){
+        r.disturbT += dt;
+        if(r.disturbT > 1.4){               // 0.42s to defend, 1.4s to lose it
+          const wasMine = (s.owner === player);
+          const prev = s.owner;
+          if(prev && prev !== player && prev !== r){         // dislodge old owner
+            prev.seat = null;
+            prev.state = 'wander'; prev.path = []; prev.waitT = 0.4;
+            prev.sitT = 0; prev.eyeT = 0;
+          }
+          s.owner = r;
+          ripBag(s);                      // their bag can't survive them sitting there
+          if(r.seat && r.seat !== s) r.seat.owner = null;
+          r.seat = s; r.state='sit'; r.sitT=0; r.eyeT=0; r.disturbT=0; r.path=[];
+          if(wasMine){
+            player.seat = null;
+            resetHold();                                   // <-- scoring STOPS HERE
+            sLose();
+            floater(s.x, s.y-30, 'SEAT TAKEN!', '#ff5d73');
+          } else {
+            floater(s.x, s.y-30, 'STOLEN!', '#ff5d73');
+          }
+        }
+      }
+    }
+  }
+}
+
+function moveTowards(ent, tx, ty, spd, dt){
+  const a = Math.atan2(ty-ent.y, tx-ent.x);
+  ent.facing = a;
+  move(ent, Math.cos(a)*spd*dt, Math.sin(a)*spd*dt);
+}
+
+function updateStaff(dt){
+  for(const st of staff){
+    // shush + staff-retreat removed by request: staff are ambience only now
+    if(st.mode === 'linger'){
+      st.lingerT -= dt;
+      if(st.lingerT <= 0) st.mode = 'patrol';
+      continue;
+    }
+
+    const wp = st.path[st.i];
+    if(Math.hypot(wp[0]-st.x, wp[1]-st.y) < 14){
+      st.i = (st.i+1) % st.path.length; st.nav = null;
+      if(Math.random() < 0.35){ st.mode='linger'; st.lingerT = 1.5+Math.random()*2; }
+      continue;
+    }
+    if(!st.nav) st.nav = navPath(st.x, st.y, wp[0], wp[1]) || [];
+    const arrived = followPath(st, st.nav, st.speed, dt);
+    if(arrived){ st.i = (st.i+1) % st.path.length; st.nav = null; }
+  }
+}
+
+function update(dt){
+  if(state !== 'play') return;
+  clock += dt;
+  if(clock >= roundLen){ clock = roundLen; endLevel(); return; }
+
+  player.moving = false;
+  player.battery = Math.max(0, player.battery - dt*0.6);
+  if(player.seat) player.holdTime += dt;
+  updatePlayer(dt);
+  updateRivals(dt);
+  updateStaff(dt);
+  tickScore(dt);                          // <-- new per-second scoring
+
+  for(const f of floaters){ f.t += dt; f.y -= 30*dt; }
+
+  if(score >= level.target){ endLevel(); }
+}
+
+// ============================================================
+//  3D RENDER LAYER  (everything above this is unchanged game logic)
+//  world (x,y) -> three (x, 0, y): the floor plane lies on XZ
+// ============================================================
+const ELEV = 45 * Math.PI/180, AZIM = -12 * Math.PI/180, CAMD = 1200;
+const CAM_T = new THREE.Vector3(W/2, 0, PH/2);
+
+let renderer, scene, camera, raycaster;
+let worldGroup, dynGroup;
+const seatMeshes = [];       // {seat, group, cushion}
+const plugMeshes = [];
+let playerMesh, rivalMeshes = [], staffMeshes = [];
+
+const typeColor = { quiet:0x4a6fa5, desk:0x6b5b95, booth:0x8e5aa8,
+                    mac:0x4c9f70, cubicle:0x9a7b4f, lamp:0x7a6bb5 };
+// '#e23b3b' -> 0xe23b3b  (parseInt('#...',16) is NaN: '#' isn't a hex digit,
+// which is why every rival body silently rendered black)
+const hexColor = c => typeof c === 'number' ? c
+                    : parseInt(String(c).replace('#',''), 16);
+const SOLID_H = { room:104, table:15, mac:13, booth:28, pillar:132,
+                  shelf:92, wall:58, desk2:24 };
+
+function initThree(){
+  const app = document.getElementById('app');
+  renderer = new THREE.WebGLRenderer({ antialias:true, alpha:false });
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  app.appendChild(renderer.domElement);
+
+  scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x0e0b14);
+  scene.fog = new THREE.Fog(0x0e0b14, 1700, 2800);
+
+  camera = new THREE.PerspectiveCamera(58, innerWidth/innerHeight, 10, 4000);
+  placeCamera();
+
+  scene.add(new THREE.HemisphereLight(0xa9b6ff, 0x2b2436, 0.78));
+  const key = new THREE.DirectionalLight(0xfff2d6, 0.95);
+  key.position.set(360, 780, 520);
+  key.castShadow = true;
+  key.shadow.mapSize.set(1024,1024);
+  key.shadow.camera.left = -640; key.shadow.camera.right = 640;
+  key.shadow.camera.top = 640;   key.shadow.camera.bottom = -640;
+  key.shadow.camera.far = 2400;
+  scene.add(key);
+  const fill = new THREE.DirectionalLight(0x88aaff, 0.34);
+  fill.position.set(-500, 420, -300); scene.add(fill);
+
+  raycaster = new THREE.Raycaster();
+  worldGroup = new THREE.Group(); scene.add(worldGroup);
+  dynGroup   = new THREE.Group(); scene.add(dynGroup);
+
+  addEventListener('resize', onResize);
+  onResize();
+}
+function placeCamera(){
+  const d = CAMD;
+  camera.position.set(
+    CAM_T.x + d*Math.cos(ELEV)*Math.sin(AZIM),
+    CAM_T.y + d*Math.sin(ELEV),
+    CAM_T.z + d*Math.cos(ELEV)*Math.cos(AZIM));
+  camera.lookAt(CAM_T);
+}
+function onResize(){
+  camera.aspect = innerWidth/innerHeight;
+  // keep the whole floor in shot regardless of window shape
+  const R = Math.hypot(W, PH)/2 + 40;
+  camera.fov = Math.min(76, 2*Math.asin(Math.min(0.99, R/CAMD))*180/Math.PI);
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+}
+
+// ---------- helpers ----------
+function mat(color, opts){
+  return new THREE.MeshStandardMaterial(Object.assign({ color, roughness:.82, metalness:.04 }, opts||{}));
+}
+function box(w,h,d,color,opts){
+  const m = new THREE.Mesh(new THREE.BoxGeometry(w,h,d), mat(color,opts));
+  m.castShadow = true; m.receiveShadow = true; return m;
+}
+function makeLabel(text, color, px){
+  const c = document.createElement('canvas');
+  const fs = px || 26;
+  let g = c.getContext('2d');
+  g.font = '600 '+fs+'px "Segoe UI", system-ui, sans-serif';
+  const cw = Math.ceil(g.measureText(text).width) + 26;
+  c.width = cw; c.height = fs + 18;
+  g = c.getContext('2d');
+  g.font = '600 '+fs+'px "Segoe UI", system-ui, sans-serif';
+  g.textAlign = 'center'; g.textBaseline = 'middle';
+  g.fillStyle = 'rgba(10,8,16,.80)';
+  const r = 8; g.beginPath();
+  g.moveTo(r,0); g.lineTo(cw-r,0); g.quadraticCurveTo(cw,0,cw,r);
+  g.lineTo(cw,c.height-r); g.quadraticCurveTo(cw,c.height,cw-r,c.height);
+  g.lineTo(r,c.height); g.quadraticCurveTo(0,c.height,0,c.height-r);
+  g.lineTo(0,r); g.quadraticCurveTo(0,0,r,0); g.fill();
+  g.fillStyle = color; g.fillText(text, cw/2, c.height/2 + 1);
+  const tex = new THREE.CanvasTexture(c);
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map:tex, transparent:true, depthTest:false }));
+  sp.scale.set(cw/2.0, c.height/2.0, 1);
+  sp.renderOrder = 5;
+  return sp;
+}
+
+// a small floating lightning bolt above each charger — icon only, no label
+function makeChargerSign(){
+  const c = document.createElement('canvas');
+  c.width = 64; c.height = 64;
+  const g = c.getContext('2d');
+  // compact dark backing so the bolt reads against any background
+  g.fillStyle = 'rgba(12,10,18,.70)';
+  g.beginPath(); g.arc(32,32,26,0,Math.PI*2); g.fill();
+  g.strokeStyle = 'rgba(255,209,102,.55)'; g.lineWidth = 2.5;
+  g.beginPath(); g.arc(32,32,26,0,Math.PI*2); g.stroke();
+  // lightning bolt
+  g.fillStyle = '#ffd166';
+  g.beginPath();
+  g.moveTo(38,14); g.lineTo(19,37); g.lineTo(29,37);
+  g.lineTo(26,51); g.lineTo(46,28); g.lineTo(35,28); g.closePath();
+  g.fill();
+  const tex = new THREE.CanvasTexture(c);
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map:tex, transparent:true, depthTest:false }));
+  sp.scale.set(19, 19, 1);
+  sp.renderOrder = 6;
+  return sp;
+}
+
+// ---------- build the static world ----------
+function buildWorld(){
+  worldGroup.clear(); dynGroup.clear();
+  seatMeshes.length = 0; plugMeshes.length = 0;
+  rivalMeshes = []; staffMeshes = [];
+
+  // floor + apron so the room doesn't float in the void
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(W, PH),
+                 new THREE.MeshStandardMaterial({ color: level.floor, roughness:.95, metalness:0 }));
+  floor.rotation.x = -Math.PI/2; floor.position.set(W/2, 0, PH/2);
+  floor.receiveShadow = true; worldGroup.add(floor);
+  const apron = new THREE.Mesh(new THREE.PlaneGeometry(W*2.6, PH*3.0),
+                 new THREE.MeshStandardMaterial({ color:0x141019, roughness:1 }));
+  apron.rotation.x = -Math.PI/2; apron.position.set(W/2, -2.5, PH/2);
+  worldGroup.add(apron);
+
+  // zone decals + labels
+  for(const d of level.decor){
+    if(d.kind === 'zone'){
+      const p = new THREE.Mesh(new THREE.PlaneGeometry(d.w, d.h),
+                 new THREE.MeshStandardMaterial({ color:d.color, roughness:.9 }));
+      p.rotation.x = -Math.PI/2;
+      p.position.set(d.x+d.w/2, 0.4, d.y+d.h/2);
+      p.receiveShadow = true; worldGroup.add(p);
+      const lb = makeLabel(d.label, '#'+d.labelColor.toString(16).padStart(6,'0'), 19);
+      lb.position.set(d.x+d.w/2, 28, d.y+30);
+      worldGroup.add(lb);
+    }
+    if(d.kind === 'roomlabel'){
+      const lb = makeLabel(d.text+' · '+d.cap+(d.booked?' LOCKED':''),
+                           d.booked ? '#ff5d73' : '#8fd6b4', 16);
+      lb.position.set(d.x+16, 62, d.y+68);
+      worldGroup.add(lb);
+    }
+  }
+
+  // furniture / walls straight from the level's solids
+  const STYLE = {
+    room:  [0x3d4f6b, .18, .25, true],
+    table: [0x6b4f3a, .85, .02, false],
+    mac:   [0x8d99a6, .55, .35, false],
+    booth: [0x5a4a6b, .90, .02, false],
+    pillar:[0x7c7f8c, .70, .10, false],
+    shelf: [0x4a3a2c, .90, .02, false],
+    wall:  [0x55505e, .90, .02, false],
+    desk2: [0x6b4f3a, .85, .02, false]
+  };
+  for(const s of level.solids){
+    const h = SOLID_H[s.kind] || 20;
+    const st = STYLE[s.kind] || [0x6b5b95, .85, .02, false];
+    const m = box(s.w, h, s.h, st[0], { roughness:st[1], metalness:st[2],
+                transparent:st[3], opacity:st[3]?0.40:1 });
+    m.position.set(s.x+s.w/2, h/2, s.y+s.h/2);
+    if(st[3]) m.castShadow = false;
+    worldGroup.add(m);
+    if(!st[3]){                                 // plinth so furniture sits on the floor
+      const pl = box(s.w+4, 2.5, s.h+4, 0x1b1724, { roughness:1 });
+      pl.position.set(s.x+s.w/2, 1.25, s.y+s.h/2); pl.castShadow = false;
+      worldGroup.add(pl);
+    }
+    if(s.kind === 'mac'){
+      const sc = box(15, 11, 2, 0x1a1f2e, { roughness:.3, metalness:.5 });
+      sc.position.set(s.x+s.w/2, h+6, s.y+7); worldGroup.add(sc);
+      const gl = new THREE.Mesh(new THREE.PlaneGeometry(13,9),
+                  new THREE.MeshBasicMaterial({ color:0x79e8ff }));
+      gl.position.set(s.x+s.w/2, h+6, s.y+5.85); worldGroup.add(gl);
+    }
+  }
+
+  // book spines on shelving units
+  for(const d of level.decor){
+    if(d.kind !== 'shelf') continue;
+    const bh = (d.h-14)/3;
+    for(let i=0;i<3;i++){
+      const b = box(d.w-6, 84, bh-6, [0x9a5f4a,0x4a7f9a,0x9a8f4a][i], { roughness:.96 });
+      b.position.set(d.x+d.w/2, 46, d.y + 7 + i*bh + bh/2);
+      worldGroup.add(b);
+    }
+  }
+
+  // seats
+  for(const s of level.seats){
+    const g = new THREE.Group();
+    const c = typeColor[s.type] || 0x6b5b95;
+    const cushion = box(16, 4, 15, c, { roughness:.9 });
+    cushion.position.y = 8;
+    const back = box(16, 15, 3, c, { roughness:.9 });
+    back.position.set(0, 16, -6);
+    const leg = new THREE.Mesh(new THREE.CylinderGeometry(2,2.6,6,8),
+                  mat(0x2b2734,{metalness:.6,roughness:.4}));
+    leg.position.y = 3;
+    const glow = new THREE.Mesh(new THREE.RingGeometry(11, 14, 26),
+                  new THREE.MeshBasicMaterial({ color:0xffd166, transparent:true, opacity:.6, side:THREE.DoubleSide }));
+    glow.rotation.x = -Math.PI/2; glow.position.y = 1.2;
+    g.add(cushion, back, leg, glow);
+    g.position.set(s.x, 0, s.y);
+    g.userData.glow = glow;
+    dynGroup.add(g);
+    seatMeshes.push({ seat:s, group:g, cushion, glow });
+  }
+
+  // chargers — clearly marked: lit face, floor halo, and a floating sign
+  for(const p of level.plugs){
+    const g = new THREE.Group();
+    const base = box(11, 8, 9, 0x3a3550, { roughness:.5, metalness:.3 });
+    base.position.y = 4;
+    const face = new THREE.Mesh(new THREE.PlaneGeometry(9, 5.5),
+                    new THREE.MeshBasicMaterial({ color:0xffd166 }));
+    face.position.set(0, 4.6, 4.6);
+    const ring = new THREE.Mesh(new THREE.RingGeometry(9, 12.5, 24),
+                    new THREE.MeshBasicMaterial({ color:0x7fe0c3, transparent:true, opacity:.8, side:THREE.DoubleSide }));
+    ring.rotation.x = -Math.PI/2; ring.position.y = 0.8;
+    const sign = makeChargerSign();
+    sign.position.y = 30;                 // hovers just above the socket
+    g.add(base, face, ring, sign);
+    g.position.set(p.x, 0, p.y);
+    g.userData.ring = ring; g.userData.sign = sign;
+    dynGroup.add(g); plugMeshes.push({ plug:p, group:g, ring, sign });
+  }
+}
+
+// ---------- characters ----------
+function buildPerson(color, isStaff, isPlayer){
+  const g = new THREE.Group();
+  const body = new THREE.Mesh(new THREE.CapsuleGeometry(5.4, 12, 5, 10), mat(color,{roughness:.75}));
+  body.position.y = 15; body.castShadow = true;
+  const head = new THREE.Mesh(new THREE.SphereGeometry(4.6, 14, 12), mat(0xf0c9a0,{roughness:.9}));
+  head.position.y = 28; head.castShadow = true;
+  const legs = box(8.5, 7, 6, isStaff ? 0x27243a : 0x2f3a4a, { roughness:.9 });
+  legs.position.y = 4.5;
+  g.add(body, head, legs);
+  if(isStaff){
+    const tie = box(2.6, 8, 1.4, 0xc7413f, { roughness:.7 });
+    tie.position.set(0, 17, 4.6);
+    const a1 = box(3, 10, 3, color, { roughness:.8 }); a1.position.set(-7.4, 16, 0);
+    const a2 = box(3, 10, 3, color, { roughness:.8 }); a2.position.set( 7.4, 16, 0);
+    g.add(tie, a1, a2);
+  }
+  if(isPlayer){
+    const pack = box(9, 11, 5, 0x2c7a6b, { roughness:.85 });
+    pack.position.set(0, 17, -7);
+    const ring = new THREE.Mesh(new THREE.RingGeometry(10, 13, 28),
+                  new THREE.MeshBasicMaterial({ color:0x79e8ff, transparent:true, opacity:.8, side:THREE.DoubleSide }));
+    ring.rotation.x = -Math.PI/2; ring.position.y = 1.4;
+    g.add(pack, ring);
+    g.userData.ring = ring;
+  }
+  return g;
+}
+
+// ---------- spawn dynamic characters ----------
+function spawnDynamic(){
+  playerMesh = buildPerson(0x79e8ff, false, true);
+  playerMesh.position.set(player.x, 0, player.y);
+  dynGroup.add(playerMesh);
+  rivalMeshes = rivals.map(r => {
+    const m = buildPerson(hexColor(r.color), false, false);
+    m.position.set(r.x, 0, r.y); dynGroup.add(m); return m;
+  });
+  staffMeshes = staff.map(s => {
+    const m = buildPerson(0x3a4a7a, true, false);
+    m.position.set(s.x, 0, s.y); dynGroup.add(m); return m;
+  });
+}
+
+// ---------- per-frame sync: logic state -> meshes ----------
+const _v = new THREE.Vector3();
+function syncScene(dt){
+  // player
+  if(playerMesh){
+    playerMesh.position.set(player.x, 0, player.y);
+    playerMesh.rotation.y = -(isFinite(player.facing) ? player.facing : 0) + Math.PI/2;
+    const bob = player.moving ? Math.sin(performance.now()/70)*1.6 : 0;
+    playerMesh.position.y = Math.abs(bob);
+    if(playerMesh.userData.ring)
+      playerMesh.userData.ring.material.opacity = 0.5 + Math.sin(performance.now()/260)*0.3;
+  }
+  // rivals
+  for(let i=0;i<rivals.length;i++){
+    const r = rivals[i], m = rivalMeshes[i];
+    if(!m) continue;
+    m.position.x = r.x; m.position.z = r.y;
+    // isFinite() guard: an undefined/NaN facing corrupts the whole matrix and
+    // three.js silently drops the mesh — that was the "blinking" NPCs.
+    m.rotation.y = -(isFinite(r.facing) ? r.facing : 0) + Math.PI/2;
+    const busy = r.state === 'steal';
+    const stun = isFinite(r.stun) ? r.stun : 0;
+    m.visible = true;                       // NEVER flicker: hiding reads as vanishing
+    if(stun > 0){                           // dazed -> wobble in place instead
+      const w = performance.now()/70;
+      m.rotation.z = Math.sin(w) * 0.4;
+      m.position.y = Math.abs(Math.sin(w*1.4)) * 3;
+    } else {
+      m.rotation.z = 0;
+      m.position.y = (r.state === 'sit') ? -7 : (busy ? 1.5 : 0);
+    }
+    m.scale.setScalar(r.state === 'sit' ? 0.92 : 1);
+  }
+  // staff
+  for(let i=0;i<staff.length;i++){
+    const s = staff[i], m = staffMeshes[i];
+    if(!m) continue;
+    m.position.x = s.x; m.position.z = s.y;
+    m.rotation.y = -(Math.atan2(s.path[s.i][1]-s.y, s.path[s.i][0]-s.x)) + Math.PI/2;
+    m.position.y = (s.mode === 'linger') ? 0 : Math.abs(Math.sin(performance.now()/180))*1.4;
+    m.scale.y = 1.08;
+  }
+  // seats: colour by who owns them
+  for(const sm of seatMeshes){
+    const s = sm.seat;
+    let c;
+    if(s.owner === player)                 c = 0xffd166;
+    else if(s.owner && s.owner.color)      c = hexColor(s.owner.color);
+    else if(s.owner)                       c = 0x8d7fd8;
+    else                                   c = typeColor[s.type] || 0x6b5b95;
+    sm.cushion.material.color.setHex(c);
+    const isMine = (s.owner === player) || (s.bagOwner === player);
+    sm.glow.material.color.setHex(isMine ? 0xffd166 : (s.owner ? 0xff5d73 : 0xffd166));
+    sm.glow.material.opacity = isMine ? (0.6 + Math.sin(performance.now()/240)*0.35)
+                            : (s.owner ? 0.22 : 0.42);
+    sm.group.position.y = (s.owner === player) ? -6 : (s.owner ? -4 : 0);
+    // bag on the seat: cyan = yours (holds the seat while you're elsewhere)
+    const bagOnSeat = s.bag || s.bagOwner === player;
+    if(bagOnSeat){
+      if(!sm.group.userData.bag){
+        const b = box(9, 6, 7, 0x2c7a6b, { roughness:.85 });
+        b.position.set(4, 13, 1); sm.group.add(b);
+        sm.group.userData.bag = b;
+      }
+      sm.group.userData.bag.material.color.setHex(s.bagOwner === player ? 0x79e8ff : 0x2c7a6b);
+    } else if(sm.group.userData.bag){
+      sm.group.remove(sm.group.userData.bag); sm.group.userData.bag = null;
+    }
+  }
+  // chargers
+  for(const pm of plugMeshes){
+    const busy = !!pm.plug.user;
+    pm.ring.material.color.setHex(busy ? 0xff8f4c : 0x7fe0c3);
+    pm.ring.material.opacity = busy ? 0.5 : (0.6 + Math.sin(performance.now()/420)*0.35);
+    if(pm.sign) pm.sign.material.opacity = busy ? 0.42 : 1;
+  }
+}
+
+// ---------- floating text, drawn as DOM for crispness ----------
+let floaterLayer = null, floaterPool = [], floaterLive = new Set();
+function ensureFloaterLayer(){
+  if(floaterLayer) return;
+  floaterLayer = document.createElement('div');
+  floaterLayer.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:11;overflow:hidden;';
+  document.getElementById('hud').appendChild(floaterLayer);
+}
+function syncFloaters(){
+  ensureFloaterLayer();
+  // drop finished ones
+  for(const f of [...floaters]){
+    if(f.t >= f.life){ f.dead = true; }
+  }
+  // pair live logic floaters with DOM nodes
+  while(floaterPool.length < floaters.length){
+    const d = document.createElement('div');
+    floaterLayer.appendChild(d); floaterPool.push(d);
+  }
+  for(let i=0;i<floaters.length;i++){
+    const f = floaters[i], d = floaterPool[i];
+    _v.set(f.x, 54, f.y); _v.project(camera);
+    const sx = (_v.x*0.5+0.5)*innerWidth, sy = (-_v.y*0.5+0.5)*innerHeight;
+    const a = Math.max(0, 1 - f.t/f.life);
+    d.style.cssText = 'position:absolute;left:'+sx.toFixed(1)+'px;top:'+sy.toFixed(1)+
+      'px;transform:translate(-50%,-50%);font:800 17px "Segoe UI",sans-serif;'+
+      'color:'+f.color+';opacity:'+a.toFixed(2)+
+      ';text-shadow:0 2px 8px rgba(0,0,0,.9);letter-spacing:.5px;';
+    d.textContent = f.text;
+  }
+  // hide leftovers beyond the live count
+  for(let i=floaters.length;i<floaterPool.length;i++) floaterPool[i].style.cssText='opacity:0';
+  // reap dead entries from the logic list
+  if(floaters.some(f=>f.dead)) floaters = floaters.filter(f=>!f.dead);
+}
+
+// ---------- HUD ----------
+const $ = id => document.getElementById(id);
+function renderHUD(){
+  if(!level) return;
+  $('lvlName').textContent = level.cn + '  ·  best ' + best;
+  const rem = Math.max(0, roundLen - clock);
+  const mm = Math.floor(rem/60), ss = Math.floor(rem%60);
+  const clk = $('clock');
+  clk.textContent = mm + ':' + (ss<10?'0':'') + ss;
+  clk.classList.toggle('low', rem <= 20);
+  $('score').textContent = score;
+  $('barFill').style.width = Math.min(100, score/level.target*100) + '%';
+  $('batFill').style.width = player.battery.toFixed(0) + '%';
+  // green = earning double, amber = single, red = nearly flat
+  $('batFill').style.background =
+      player.battery > BATTERY_FULL ? '#7fe0c3'
+    : (player.battery > 15          ? '#f2cc8f' : '#ff5d73');
+  $('batVal').textContent = player.battery.toFixed(0) + '%';
+  const bs = $('batState');
+  if(player.battery > BATTERY_FULL){
+    bs.textContent = '×2  DOUBLE POINTS';  bs.className = 'double';
+  } else if(player.battery > 15){
+    bs.textContent = '×1  above 50% for ×2';  bs.className = 'single';
+  } else {
+    bs.textContent = '×1  plug in at a CHARGER';  bs.className = 'flat';
+  }
+
+  const h = $('held');
+  if(heldInfo.active){
+    h.style.display = 'flex';
+    const seatsHeld = (player.seat ? 1 : 0) + (bagRate() > 0 ? 1 : 0);
+    $('heldTitle').textContent = seatsHeld > 1 ? 'HOLDING 2 SEATS' : 'HOLDING A SEAT';
+    const parts = [];
+    if(heldInfo.bodyRate){
+      const base = Math.max(1, player.seat.mult * batteryBonus());
+      const holdMult = currentRate() / base;
+      parts.push('BODY +' + heldInfo.bodyRate + '/s  ·  held ' +
+                 Math.floor(player.holdTime) + 's  ·  ×' + holdMult.toFixed(2));
+    }
+    if(heldInfo.bagRate) parts.push('BAG +' + heldInfo.bagRate + '/s');
+    $('heldRate').textContent = parts.join('   ');
+  } else h.style.display = 'none';
+}
+function setBanner(big, sub, secs){
+  const b = $('banner');
+  b.querySelector('.big').textContent = big;
+  b.querySelector('.sub').textContent = sub;
+  b.style.display = 'block';
+  clearTimeout(setBanner._t);
+  setBanner._t = setTimeout(()=>{ b.style.display = 'none'; }, (secs||2.2)*1000);
+}
+
+// ---------- game flow ----------
+function endLevel(){
+  if(state !== 'play') return;
+  const won = score >= level.target;
+  state = 'end';
+  if(score > best){ best = score; try{ localStorage.setItem('seatwars3d_best', best); }catch(e){} }
+  const last = levelIdx >= LEVELS.length-1;
+  $('endTitle').textContent = last && won ? 'YOU WIN!' : (won ? 'LEVEL CLEAR' : 'TIME UP');
+  $('endTitle').style.color = won ? '#ffd166' : '#ff5d73';
+  $('endSub').textContent = level.name;
+  $('endMsg').textContent = won
+    ? 'Target hit with ' + Math.ceil(roundLen-clock) + 's to spare.'
+    : 'You scored ' + score + ' of ' + level.target + ' — you needed a bigger desk.';
+  $('endStats').innerHTML =
+    'SCORE <b>' + score + '</b> &nbsp; TARGET <b>' + level.target +
+    '</b> &nbsp; BEST <b>' + best + '</b><br>' +
+    'Longest hold: ' + Math.floor(player.holdTime) + 's at ' + currentRate() + '/sec';
+  $('btnNext').textContent = last && won ? 'PLAY AGAIN' : (won ? 'NEXT LEVEL' : 'RETRY');
+  $('endScreen').classList.remove('hidden');
+  if(won) sWin(); else sLose();
+}
+function nextLevel(){
+  $('endScreen').classList.add('hidden');
+  const last = levelIdx >= LEVELS.length-1;
+  if(state === 'end' && score >= level.target && last){ loadLevel(0); state = 'play'; return; }
+  const next = state === 'end' && score >= level.target ? levelIdx+1 : levelIdx;
+  loadLevel(Math.min(next, LEVELS.length-1));
+  state = 'play';
+}
+function startGame(){
+  $('titleScreen').classList.add('hidden');
+  audio();
+  loadLevel(0);
+  state = 'play';
+}
+
+// ---------- input ----------
+addEventListener('keydown', e => {
+  const k = e.key.toLowerCase();
+  keys[k] = true;
+  if(['arrowup','arrowdown','arrowleft','arrowright',' ','tab'].includes(k)) e.preventDefault();
+  if((k === 'enter' || k === ' ') && state === 'title') startGame();
+  else if((k === 'enter') && state === 'end') nextLevel();
+  else if(k === 'q' && state === 'play') tryBag();
+  else if(state === 'rps'){
+    if(k === 'r')      playRPS('rock');
+    else if(k === 'p') playRPS('paper');
+    else if(k === 's') playRPS('scissors');
+  }
+});
+addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
+addEventListener('blur', () => { keys = {}; });
+// shift arrives as 'shift'
+addEventListener('keydown', e => { if(e.key === 'Shift') keys['shift'] = true; });
+addEventListener('keyup',   e => { if(e.key === 'Shift') keys['shift'] = false; });
+
+$('btnStart').addEventListener('click', startGame);
+$('btnNext').addEventListener('click', nextLevel);
+document.querySelectorAll('.rpsBtn').forEach(b =>
+  b.addEventListener('click', () => playRPS(b.dataset.move)));
+
+// ---------- main loop ----------
+let lastT = performance.now(), acc = 0;
+const STEP = 1/60;
+function frame(now){
+  requestAnimationFrame(frame);
+  const dt = Math.min(0.1, (now - lastT)/1000);
+  lastT = now;
+  if(state === 'play'){
+    acc += dt;
+    while(acc >= STEP){ update(STEP); acc -= STEP; }
+  }
+  if(player && level){
+    syncScene(dt);
+    syncFloaters();
+    renderHUD();
+  }
+  renderer.render(scene, camera);
+}
+requestAnimationFrame(frame);
+
+// ---------- boot ----------
+initThree();   // scene/camera/renderer only; the world builds on loadLevel()
+</script>
+</body>
+</html>
