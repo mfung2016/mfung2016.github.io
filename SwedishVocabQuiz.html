@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SVENSKA ORDLISTA — interactive quiz</title>
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:#12101a;color:#e8e4f2;min-height:100%;
+    font-family:"Segoe UI",system-ui,-apple-system,sans-serif;}
+  .wrap{max-width:820px;margin:0 auto;padding:22px 18px 60px;}
+
+  header{text-align:center;margin-bottom:22px}
+  h1{font-size:26px;margin:0;color:#ffd166;letter-spacing:.5px}
+  .sub{font-size:13px;color:#8d86a0;margin-top:4px}
+
+  .card{background:#1b1826;border:1px solid rgba(200,170,255,.16);border-radius:14px;
+    padding:18px 20px;margin-bottom:14px;}
+
+  .row{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+  .row.center{justify-content:center}
+  .lbl{font-size:10px;letter-spacing:1.6px;color:#8d86a0;font-weight:700;
+    text-transform:uppercase;margin-bottom:7px}
+
+  .chip{background:#262234;color:#c9c3e0;border:1px solid rgba(255,255,255,.09);
+    padding:9px 15px;border-radius:20px;font-size:13px;cursor:pointer;font-weight:600;
+    transition:.12s;user-select:none}
+  .chip:hover{background:#312b46;color:#fff}
+  .chip.on{background:#ffd166;color:#14161c;border-color:#ffd166}
+
+  button{background:#ffd166;color:#14161c;border:0;border-radius:9px;padding:12px 26px;
+    font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;transition:.12s}
+  button:hover{background:#ffe08a;transform:translateY(-1px)}
+  button.ghost{background:transparent;color:#c9c3e0;border:1px solid rgba(255,255,255,.18);
+    font-weight:600;font-size:13px;padding:9px 16px}
+  button.ghost:hover{background:rgba(255,255,255,.07);transform:none}
+  button:disabled{opacity:.4;cursor:default;transform:none}
+
+  /* quiz card */
+  #quiz{display:none;text-align:center;padding:26px 20px}
+  #qDir{font-size:11px;letter-spacing:2px;color:#7fe0c3;font-weight:800;text-transform:uppercase}
+  #qWord{font-size:36px;font-weight:800;margin:12px 0 4px;line-height:1.2}
+  #qForm{font-size:14px;color:#9a92ad;margin-bottom:2px;font-style:italic}
+  #qKind{display:inline-block;font-size:10px;letter-spacing:1px;color:#8d86a0;
+    border:1px solid rgba(255,255,255,.14);padding:2px 9px;border-radius:20px;margin-top:6px}
+  #qCh{font-size:11px;color:#8d86a0;margin-top:6px}
+
+  .opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}
+  .opt{background:#262234;border:1px solid rgba(255,255,255,.10);border-radius:10px;
+    padding:15px 12px;font-size:15px;cursor:pointer;font-weight:600;transition:.12s;
+    text-align:center;line-height:1.35}
+  .opt:hover{background:#332c4a}
+  .opt.right{background:#1f5e46;border-color:#7fe0c3;color:#eafff6}
+  .opt.wrong{background:#5e1f2a;border-color:#ff5d73;color:#ffe9ee}
+  .opt.dim{opacity:.35}
+
+  input[type=text]{width:100%;background:#12101a;border:2px solid rgba(255,255,255,.14);
+    border-radius:10px;padding:14px 16px;font-size:20px;color:#fff;font-family:inherit;
+    text-align:center;margin-top:18px;outline:none}
+  input[type=text]:focus{border-color:#ffd166}
+
+  .fb{margin-top:16px;min-height:52px;font-size:15px;line-height:1.5}
+  .fb .good{color:#7fe0c3;font-weight:800}
+  .fb .bad{color:#ff5d73;font-weight:800}
+  .fb .ans{color:#ffd166;font-weight:800}
+
+  /* flashcard */
+  #fc{display:none;cursor:pointer;user-select:none}
+  #fcFront{font-size:38px;font-weight:800;margin:14px 0}
+  #fcBack{font-size:30px;font-weight:700;color:#7fe0c3;margin:14px 0;display:none}
+  #fcForm{font-size:15px;color:#9a92ad;font-style:italic}
+  .tapHint{font-size:12px;color:#7d768f;margin-top:14px}
+
+  /* stats */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+  .st{background:#1b1826;border:1px solid rgba(200,170,255,.14);border-radius:11px;
+    padding:11px 8px;text-align:center}
+  .st .n{font-size:21px;font-weight:800;color:#ffd166}
+  .st .t{font-size:9.5px;letter-spacing:1px;color:#8d86a0;text-transform:uppercase}
+
+  #progress{height:8px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden;
+    margin-bottom:12px}
+  #progressFill{height:100%;width:0;background:linear-gradient(90deg,#7fe0c3,#ffd166);transition:.25s}
+
+  #bar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+  #streak{font-size:13px;color:#9a92ad}
+  #streak b{color:#ffd166}
+
+  .hidden{display:none!important}
+  .small{font-size:12px;color:#7d768f;line-height:1.6}
+
+  /* weak list */
+  #weakList{font-size:13px;line-height:1.85;columns:2;column-gap:22px}
+  #weakList div{break-inside:avoid;color:#c9c3e0}
+  #weakList b{color:#ffd166}
+  #weakList span{color:#8d86a0}
+  #rMiss{font-size:13px;line-height:1.85;columns:2;column-gap:22px}
+  #rMiss div{break-inside:avoid;color:#c9c3e0}
+  #rMiss b{color:#ff9aa8}
+  #rMiss i{color:#8d86a0;font-style:normal}
+  .warn{color:#ff5d73;font-weight:700}
+
+  @media(max-width:560px){
+    .opts{grid-template-columns:1fr}
+    #qWord{font-size:29px}
+    #fcFront{font-size:30px}
+    .stats{grid-template-columns:repeat(2,1fr)}
+    #weakList{columns:1}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>SVENSKA ORDLISTA</h1>
+    <div class="sub">A1+A2 textbook vocabulary — Chapters 1–3 + classroom phrases</div>
+  </header>
+
+  <div class="stats" id="statRow">
+    <div class="st"><div class="n" id="stSeen">0</div><div class="t">seen</div></div>
+    <div class="st"><div class="n" id="stKnown">0</div><div class="t">known</div></div>
+    <div class="st"><div class="n" id="stWk">0</div><div class="t">weak</div></div>
+    <div class="st"><div class="n" id="stAcc">–</div><div class="t">accuracy</div></div>
+  </div>
+
+  <!-- SETUP -->
+  <div class="card" id="setup">
+    <div class="lbl">Which words</div>
+    <div class="row" id="decks">
+      <div class="chip on" data-d="all">All</div>
+      <div class="chip" data-d="0">Classroom</div>
+      <div class="chip" data-d="1">Kapitel 1</div>
+      <div class="chip" data-d="2">Kapitel 2</div>
+      <div class="chip" data-d="3">Kapitel 3</div>
+      <div class="chip" data-d="weak">⚠ Weak only</div>
+    </div>
+
+    <div class="lbl" style="margin-top:16px">Mode</div>
+    <div class="row" id="modes">
+      <div class="chip on" data-m="type">Type it</div>
+      <div class="chip" data-m="flash">Flashcards</div>
+      <div class="chip" data-m="form">Word forms</div>
+      <div class="chip" data-m="mixed">Mix everything</div>
+    </div>
+
+    <div class="lbl" style="margin-top:16px">Direction</div>
+    <div class="row" id="dirs">
+      <div class="chip on" data-f="both">Both</div>
+      <div class="chip" data-f="sve">Svenska → English</div>
+      <div class="chip" data-f="eng">English → Svenska</div>
+    </div>
+
+    <div class="lbl" style="margin-top:16px">Length</div>
+    <div class="row" id="lens">
+      <div class="chip" data-l="10">10</div>
+      <div class="chip on" data-l="20">20</div>
+      <div class="chip" data-l="40">40</div>
+      <div class="chip" data-l="9999">Everything</div>
+    </div>
+
+    <div class="row center" style="margin-top:20px">
+      <button id="btnStart">START QUIZ</button>
+      <button class="ghost" id="btnReset" title="forget all saved progress">reset progress</button>
+      <button class="ghost" id="btnWeak">weak words</button>
+    </div>
+  </div>
+
+  <!-- MULTIPLE CHOICE / TYPE -->
+  <div class="card" id="quiz">
+    <div id="progress"><div id="progressFill"></div></div>
+    <div id="bar">
+      <div id="qPos">1 / 20</div>
+      <div id="streak">streak <b>0</b></div>
+      <button class="ghost" id="btnQuit">quit</button>
+    </div>
+    <div style="margin-top:16px">
+      <div id="qDir"></div>
+      <div id="qWord"></div>
+      <div id="qForm"></div>
+      <div id="qKind"></div>
+      <div id="qCh"></div>
+    </div>
+    <div id="mcWrap"><div class="opts" id="opts"></div></div>
+    <div id="typeWrap">
+      <input type="text" id="typeIn" autocomplete="off" autocapitalize="off" spellcheck="false"
+             placeholder="type your answer…">
+    </div>
+    <div class="fb" id="fb"></div>
+    <div class="row center"><button id="btnNext" class="hidden">NEXT →</button></div>
+  </div>
+
+  <!-- FLASHCARDS -->
+  <div class="card" id="fc">
+    <div id="progress"><div id="progressFill2" style="height:100%;width:0;background:linear-gradient(90deg,#7fe0c3,#ffd166);border-radius:4px;transition:.25s"></div></div>
+    <div id="bar">
+      <div id="fcPos">1 / 20</div>
+      <button class="ghost" id="btnQuit2">quit</button>
+    </div>
+    <div id="fcFront"></div>
+    <div id="fcForm"></div>
+    <div id="fcBack"></div>
+    <div class="tapHint" id="tapHint">tap the card (or press Space) to flip</div>
+    <div class="row center hidden" style="margin-top:18px" id="fcBtns">
+      <button class="ghost" id="fcNo" style="border-color:#ff5d73;color:#ff9aa8">✗ didn’t know</button>
+      <button id="fcYes">✓ knew it</button>
+    </div>
+  </div>
+
+  <!-- WEAK LIST -->
+  <div class="card hidden" id="weakCard">
+    <div class="lbl">Words you keep missing</div>
+    <div id="weakList"></div>
+    <div class="row center" style="margin-top:14px">
+      <button class="ghost" id="btnWeakClose">close</button>
+    </div>
+  </div>
+
+  <!-- ROUND RESULTS -->
+  <div class="card hidden" id="resultCard">
+    <div class="lbl" style="text-align:center">Round complete</div>
+    <div style="text-align:center">
+      <div id="rBig" style="font-size:32px;font-weight:800;color:#ffd166"></div>
+      <div id="rSub" style="font-size:14px;color:#9a92ad;margin-top:4px"></div>
+    </div>
+    <div class="stats" style="margin-top:16px">
+      <div class="st"><div class="n" id="rRight">0</div><div class="t">correct</div></div>
+      <div class="st"><div class="n" id="rAcc">0%</div><div class="t">accuracy</div></div>
+      <div class="st"><div class="n" id="rBest">0</div><div class="t">best streak</div></div>
+      <div class="st"><div class="n" id="rWk">0</div><div class="t">weak now</div></div>
+    </div>
+    <div class="lbl" id="rMissLbl" style="margin-top:14px">Missed this round</div>
+    <div id="rMiss"></div>
+    <div class="row center" style="margin-top:18px">
+      <button id="btnAgain">TRY AGAIN</button>
+      <button class="ghost" id="btnHome">change settings</button>
+      <button class="ghost" id="btnWeak2">weak words</button>
+    </div>
+  </div>
+
+  <div class="small" style="text-align:center;margin-top:18px">
+    Progress is saved in this browser. Wrong answers get asked more often.
+  </div>
+</div>
+
+<script>
+'use strict';
+// [ swedish, english, word-forms, kind, chapter ]   kind: n/v/adj/p/o(ther)
+const VOCAB = [
+// ---------------- classroom phrases (ch 0) ----------------
+["elev","student","(-en, -er, -erna)","n",0],
+["lärare","teacher","(-n, –, -lärarna)","n",0],
+["Ursäkta.","Excuse me.","","p",0],
+["Jag har en fråga.","I have a question.","","p",0],
+["Vad betyder det?","What does that mean?","","p",0],
+["Hur säger man … på svenska?","How do you say … in Swedish?","","p",0],
+["Vad heter … på svenska?","What is … called in Swedish?","","p",0],
+["Hur uttalar man …?","How do you pronounce …?","","p",0],
+["Hur stavar/skriver man …?","How do you spell / write …?","","p",0],
+["Kan du säga det en gång till?","Could you repeat that?","","p",0],
+["Jag förstår inte.","I don’t understand.","","p",0],
+["Jaha! Nu förstår jag!","Ah! Now I understand!","","p",0],
+["Förstår du / ni?","Do you understand?","","p",0],
+["Har ni några frågor?","Do you have any questions?","","p",0],
+["Titta på sidan X i textboken/övningsboken.","Look at page X in the textbook / exercise book.","","p",0],
+["Läs texten på sidan X.","Read the text on page X.","","p",0],
+["Stäng boken.","Close the book.","","p",0],
+["Lyssna.","Listen.","","p",0],
+["Säg efter mig.","Repeat after me.","","p",0],
+["Skriv!","Write!","","p",0],
+["Arbeta i par.","Work in pairs.","","p",0],
+["Prata svenska!","Speak Swedish!","","p",0],
+// ---------------- Kapitel 1 ----------------
+["rivstart","flying start","(-en, -er, -erna)","n",1],
+["kapitel","chapter","(kapitlet, –, kapitlen)","n",1],
+["sida","page","(-n, -or, -orna)","n",1],
+["Du kan svenska!","You speak Swedish!","","p",1],
+["kunna","know; can","(kan, kunde, kunnat)","v",1],
+["svenska","Swedish","","o",1],
+["kombinera","combine","(-r, -de, -t)","v",1],
+["foto","photo","(-t, -n, -na)","n",1],
+["och","and","","o",1],
+["ord","word","(-et, –, -en)","n",1],
+["hamburgare","hamburger","(-n, –, hamburgarna)","n",1],
+["advokat","lawyer","(-en, -er, -erna)","n",1],
+["potatis","potato","(-en, -ar, -arna)","n",1],
+["mobil","cell phone, mobile phone","(-en, -er, -erna)","n",1],
+["papper","paper","(-et, –, -en)","n",1],
+["kaffe","coffee","(-et)","n",1],
+["bok","book","(-en, böcker, böckerna)","n",1],
+["kanelbulle","cinnamon roll, bun","(-n, -ar, -arna)","n",1],
+["penna","pen","(-n, -or, -orna)","n",1],
+["vatten","water","(vattnet)","n",1],
+["lång","long","(-t, -a)","adj",1],
+["vokal","vowel","(-en, -er, -erna)","n",1],
+["eller","or","","o",1],
+["konsonant","consonant","(-en, -er, -erna)","n",1],
+["exempel","example","(exemplet, –, exemplen)","n",1],
+["på","on / at","","o",1],
+["kurs","course","(-en, -er, -erna)","n",1],
+["Hej!","Hi!","","p",1],
+["Jag heter …","My name is …","","p",1],
+["jag","I","","o",1],
+["heta","be called","(heter, hette, hetat)","v",1],
+["varifrån","from where","","o",1],
+["komma","come","(kommer, kom, kommit)","v",1],
+["från","from","","o",1],
+["nej","no","","o",1],
+["jaha","I see","","o",1],
+["vad bra","that’s great","","p",1],
+["Vad talar du för språk?","What languages do you speak?","","p",1],
+["vad … för","what","","p",1],
+["tala","speak","(talar, talade, talat)","v",1],
+["språk","language","(-et, –, -en)","n",1],
+["lite","some, a little","","o",1],
+["spanska","Spanish","","o",1],
+["så klart","of course","","p",1],
+["Vad heter du?","What is your name?","","p",1],
+["vad","what","","o",1],
+["vara","to be","(är, var, varit)","v",1],
+["Och du?","And you?","","p",1],
+["var","where","","o",1],
+["ligga","lie, be situated","(ligger, låg, legat)","v",1],
+["det","it","","o",1],
+["i","in","","o",1],
+["norra","Northern","","o",1],
+["Italien","Italy","","o",1],
+["prata","talk","(-r, -de, -t)","v",1],
+["pyttelite","a tiny bit","","o",1],
+["italienska","Italian","","o",1],
+["Vad kul!","Great! How fun!","","p",1],
+["lyssna","listen","(-r, -de, -t)","v",1],
+["dialog","dialogue","(-en, -er, -erna)","n",1],
+["vilken","which","(vilket, vilka)","adj",1],
+["ha","have","(har, hade, haft)","v",1],
+["betoning","emphasis","(-en, -ar, -arna)","n",1],
+["ringa","in circle, circle","(-er, -de, -t)","v",1],
+["igen","again","","o",1],
+["markera","mark","(-r, -de, -t)","v",1],
+["uttala","pronounce","(-ar, -de, -t)","v",1],
+["inte","not","","o",1],
+["titta","look","(-r, -de, -t)","v",1],
+["ruta","box","(-n, -or, -orna)","n",1],
+["här","here","","o",1],
+["nedanför","below","","o",1],
+["se","see","(ser, såg, sett)","v",1],
+["ett","a / an","","o",1],
+["system","system","(-et, –, -en)","n",1],
+["för","for","","o",1],
+["verb","verb / verbs","(-et, –, en)","n",1],
+["position","position","(-en, -er, -erna)","n",1],
+["läsa","read / study","(-er, -te, -t)","v",1],
+["sätta ett kryss","make an x, tick","","p",1],
+["sätta","put, place","(-er, satte, satt)","v",1],
+["alla","all / everyone","","o",1],
+["fråga","ask","(-r, -de, -t)","v",1],
+["svara","answer","(-r, -de, -t)","v",1],
+["frågeord","question words","(-et, –, -en)","n",1],
+["mingla","mingle","(-r, -de, -t)","v",1],
+["grupp","group","(-en, -er, -erna)","n",1],
+["skriva","write","(skriver, skrev, skrivit)","v",1],
+["namn","name","(-et, –, -en)","n",1],
+["land","country","(-et, länder, länderna)","n",1],
+["Colombia","Colombia","","o",1],
+["Irland","Ireland","","o",1],
+["franska","French","","o",1],
+["presentera","introduce","(-r, -de, -t)","v",1],
+["varandra","each other","","o",1],
+["hon","she","","o",1],
+["han","he","","o",1],
+["den","it","","o",1],
+["vi","we","","o",1],
+["ni","you","","o",1],
+["de","they","","o",1],
+["subjektspronomen","subject pronoun","","o",1],
+["pronomen","pronoun","(-et, –, -en)","n",1],
+["säga","say","(säger, sa/sade, sagt)","v",1],
+["klass","class","(-en, -er, -erna)","n",1],
+["om","about","","o",1],
+["arbeta","work","(-r, -de, -t)","v",1],
+["ingenjör","engineer","(-en, -er, -erna)","n",1],
+["läkare","doctor, physician","(-n, –, läkarna)","n",1],
+["tandläkare","dentist","(-n, –, tandläkarna)","n",1],
+["sjuksköterska","nurse","(-n, -or, -orna)","n",1],
+["busschaufför","bus driver","(-en, -er, -erna)","n",1],
+["frisör","hairdresser","(-en, -er, -erna)","n",1],
+["webbdesigner","web designer","(-n, webbdesigner, webbdesignerna)","n",1],
+["fotograf","photographer","(-en, -er, -erna)","n",1],
+["servitör","waiter, waitress","(-en, -er, -erna)","n",1],
+["kock","chef","(-en, -ar, -arna)","n",1],
+["nähä","I see (ugs)","","o",1],
+["göra","do, make","(gör, gjorde, gjort)","v",1],
+["då","then","","o",1],
+["plugga","study","(-r, -de, -t)","v",1],
+["studera","study","(-r, -de, -t)","v",1],
+["design","design","(-en)","n",1],
+["pensionär","retiree, pensioner","(-en, -er, -erna)","n",1],
+["jobba","work","(-r, -de, -t)","v",1],
+["ja","yes","","o",1],
+["med","with","","o",1],
+["barn","children","(-et, –, -en)","n",1],
+["förskola","preschool","(-n, -or, -orna)","n",1],
+["nu","now","","o",1],
+["söka","seek, look for","(-er, -te, -t)","v",1],
+["jobb","job","(-et, –, -en)","n",1],
+["restaurang","restaurant","(-en, -er, -erna)","n",1],
+["lycka till","good luck","","p",1],
+["negation","negation","(-en, -er, -erna)","n",1],
+["mening","sentence","(-en, -ar, -arna)","n",1],
+["Ukraina","Ukraine","","o",1],
+["portugisiska","Portuguese","","o",1],
+["filosofi","philosophy","(-n)","n",1],
+["psykologi","psychology","(-n)","n",1],
+["yrke","profession","(-t, -n, -na)","n",1],
+["IT-företag","IT company","(-et, –, -en)","n",1],
+["bank","bank","(-en, -er, -erna)","n",1],
+["IT","IT, information technology","","o",1],
+["ekonomi","accounts, economics","(-n)","n",1],
+["programmerare","programmer","(-n, –, programmerarna)","n",1],
+["ekonom","accountant","(-en, -er, -erna)","n",1],
+["förskolelärare","preschool teacher","(-n, –, -förskolelärarna)","n",1],
+["programmering","programming","(-en, -ar, -arna)","n",1],
+["studera till","study to be","","p",1],
+["till","to","","o",1],
+["höra","hear","(hör, hörde, hört)","v",1],
+["kryssa för","tick, cross","(-r, -de, -t)","v",1],
+["rätt alternativ","correct answer, correct option","","p",1],
+["rätt","correct, right","(-a)","adj",1],
+["alternativ","option, answer","(-et, –, -en)","n",1],
+["polis","policeman / woman","(-en, -er, -erna)","n",1],
+["biolog","biologist","(-en, -er, -erna)","n",1],
+["kemist","chemist","(-en, -en, -erna)","n",1],
+["gift","married","(–, -a)","adj",1],
+["sambo","live-in partner","(-n, -r, -rna)","n",1],
+["singel","single","","adj",1],
+["min","my","(mitt, mina)","adj",1],
+["man","husband / man","(-nen, män, männen)","n",1],
+["schweizare","Swiss","(-n, –, schweizarna)","n",1],
+["men","but","","o",1],
+["två","two","","o",1],
+["en","one","","o",1],
+["son","son","(-en, söner, sönerna)","n",1],
+["dotter","daughter","(-n, döttrar, döttrarna)","n",1],
+["svensk","Swedish","(-t, -a)","adj",1],
+["också","also, too","","o",1],
+["flickvän","girlfriend","(-nen, -ner, -nerna)","n",1],
+["bo","live","(-r, bodde, bott)","v",1],
+["bo ihop","live together","","p",1],
+["USA","USA","","o",1],
+["toppen","super, great","","o",1],
+["par","couple","(-et, –, -en)","n",1],
+["Sverige","Sweden","","o",1],
+["skilja","divorce","(-er, skilde, skilt)","v",1],
+["samma","same","","adj",1],
+["år","year","(-et, –, -en)","n",1],
+["kvinna","woman","(-n, -or, -orna)","n",1],
+["sedan","since / then","","o",1],
+["källa","source","(-n, -or, -orna)","n",1],
+["skild","divorced","(skilt, skilda)","adj",1],
+["separerad","separated","(separerat, separerade)","adj",1],
+["tjej","girlfriend","(-en, -er, -erna)","n",1],
+["pojkvän","boyfriend","(-nen, -ner, -nerna)","n",1],
+["kille","boyfriend","(-n, -ar, -arna)","n",1],
+["fru","wife","(-n, -ar, -arna)","n",1],
+["pojke","boy","(-n, -ar, -arna)","n",1],
+["flicka","girl","(-n, -or, -orna)","n",1],
+["Ja, det är jag.","Yes, I am.","","p",1],
+["bonusbarn","stepchild","(-et, –, -en)","n",1],
+["tre","three","","o",1],
+["person","person","(-en, -er, -erna)","n",1],
+["text","text","(-en, -er, -erna)","n",1],
+["generell","general","(-t, -a)","adj",1],
+["stryka under","underline","(stryker, strök, strukit)","v",1],
+["England","England","","o",1],
+["universitet","university","(-et, –, -en)","n",1],
+["extra","extra","","o",1],
+["nära","near, close to","","o",1],
+["sortera","sort, organize","(-r, -de, -t)","v",1],
+["matematik","mathematics","(-en)","n",1],
+["lätt","easy","(-a)","adj",1],
+["form","form, conjugation","(-en, -er, -erna)","n",1],
+["alfabet","alphabet","(-et, –, -en)","n",1],
+["efternamn","last name, surname, family name","(-et, –, -en)","n",1],
+["stava","spell","(-r, -de, -t)","v",1],
+["annan","another","(annat, andra)","adj",1],
+["använda","use","(-er, använde, använt)","v",1],
+["som","as","","o",1],
+["tyska","German","","o",1],
+["forska","do research","(-r, -de, -t)","v",1],
+["institut","institute","(-et, –, -en)","n",1]
+];
+const VOCAB2 = [
+// ---------------- Kapitel 2 ----------------
+["Tjena!","Hi!","","p",2],
+["Hur mår du?","How are you?","","p",2],
+["må","feel","(mår, mådde, mått)","v",2],
+["bara bra","I’m fine, well","","p",2],
+["bra","fine, well","","adj",2],
+["tack","thank you","","o",2],
+["Jo tack.","Thanks (for asking)","","p",2],
+["Det är bra.","I’m fine.","","p",2],
+["Hur är läget?","How are things? How’s it going?","","p",2],
+["läge","situation","(-t, -n, -na)","n",2],
+["Det är lugnt.","Great, Okay","","p",2],
+["lugn","cool, calm","(-t, -a)","adj",2],
+["Själv?","How about you? And you?","","p",2],
+["själv","self (myself, yourself…)","(-a)","adj",2],
+["kanonbra","great","","o",2],
+["Hejsan!","Hi there!","","p",2],
+["Hur är det?","How are things?","","p",2],
+["Fint!","Great!","","p",2],
+["Allt väl?","All well?","","p",2],
+["väl","well, good","","o",2],
+["Helt okej","Fine","","p",2],
+["helt","completely","","o",2],
+["okej","okay","","o",2],
+["för mycket","too much","","p",2],
+["för","too","","o",2],
+["jodå","all right","","o",2],
+["som vanligt","as usual","","p",2],
+["vanlig","usual, ordinary","(-t, -a)","adj",2],
+["Tja!","Hey! Hi! (= Tjena!)","","p",2],
+["så där","so-so","","p",2],
+["nja","we-ell…","","o",2],
+["Hur står det till?","How are you?","","p",2],
+["ganska","fairly, quite","","o",2],
+["dålig","bad, ill","(-t, -a)","adj",2],
+["faktiskt","actually","","o",2],
+["Jag är förkyld.","I have a cold.","","p",2],
+["så","so","","o",2],
+["trött","tired","","adj",2],
+["God morgon!","Good morning!","","p",2],
+["jättetrött","really tired","","adj",2],
+["Oj då!","Oh! Wow!","","p",2],
+["dricka","drink","(dricker, drack, druckit)","v",2],
+["lite","a little, a bit","","o",2],
+["hälsa","greet, say hello","(-r, -de, -t)","v",2],
+["God dag.","Hello.","","p",2],
+["god","good","(gott, goda)","adj",2],
+["dag","day","(-en, -ar, -arna)","n",2],
+["retur","return","","o",2],
+["västra Sverige","western Sweden","","o",2],
+["informell","informal","(-t, -a)","adj",2],
+["formell","formal","(-t, -a)","adj",2],
+["tillsammans","together","","o",2],
+["markering","mark","(-en, -ar, -arna)","n",2],
+["betonad","emphasized","(betonat, betonade)","adj",2],
+["intonation","intonation","(-en, -er, -erna)","n",2],
+["slut","end","(-et, –, -en)","n",2],
+["fras","phrase","(-en, -er, -erna)","n",2],
+["gå","go","(går, gick, gått)","v",2],
+["ton","pitch","(-en, -er, -erna)","n",2],
+["upp","up","","o",2],
+["ner","down","","o",2],
+["kung","king","(-en, -ar, -arna)","n",2],
+["intresserad av","interested in","(intresserat, intresserade)","adj",2],
+["journalist","journalist","(-en, -er, -erna)","n",2],
+["thailändsk","Thai","","adj",2],
+["tidning","newspaper, magazine","(-en, -ar, -arna)","n",2],
+["nät","net","(-et, –, -en)","n",2],
+["Norden","the Nordic countries","","o",2],
+["trivas","thrive, be happy","(trivs, trivdes, trivts)","v",2],
+["längta","miss, long for","(-r, -de, -t)","v",2],
+["familj","family","(-en, -er, -erna)","n",2],
+["vän","friend","(-nen, -ner, -nerna)","n",2],
+["Thailand","Thailand","","o",2],
+["ofta","often","","o",2],
+["telefon","telephone","(-en, -er, -erna)","n",2],
+["IT-ingenjör","computer engineer","(-en, -er, -erna)","n",2],
+["spelföretag","gaming company","(-et, –, -en)","n",2],
+["spel","game","(-et, –, -en)","n",2],
+["företag","company","(-et, –, -en)","n",2],
+["katt","cat","(-en, -er, -erna)","n",2],
+["sol","sun","(-en)","n",2],
+["ibland","sometimes","","o",2],
+["mamma","mom","(-n, -or, -orna)","n",2],
+["pappa","dad","(-an, -or, -orna)","n",2],
+["vecka","week","(-n, -or, -orna)","n",2],
+["i sommar","this summer","","p",2],
+["sommar","summer","(-en, somrar, somrarna)","n",2],
+["det blir","it will be","","p",2],
+["bli","be, become","(blir, blev, blivit)","v",2],
+["rolig","fun","(-t, -a)","adj",2],
+["deckare","crime novel","(-n, –, deckarna)","n",2],
+["jazz","jazz","(-en)","n",2],
+["hemma","at home","","o",2],
+["Skandinavien","Scandinavia","","o",2],
+["Norge","Norway","","o",2],
+["Danmark","Denmark","","o",2],
+["Island","Iceland","","o",2],
+["självstyrande","autonomous, self-governing","","adj",2],
+["Färöarna","Faroe Islands","","o",2],
+["Grönland","Greenland","","o",2],
+["Finland","Finland","","o",2],
+["Åland","Åland Islands","","o",2],
+["till exempel","for example","","p",2],
+["ses","to meet","(ses, sågs, setts)","v",2],
+["höras","be in touch","(hörs, hördes, hörts)","v",2],
+["fest","party","(-en, -er, -erna)","n",2],
+["klasskompis","classmate","(-en, -ar, -arna)","n",2],
+["välkommen","welcome","(välkommet, välkomna)","adj",2],
+["det här","this","","p",2],
+["trevlig","nice, friendly","(-t, -a)","adj",2],
+["att","to","","o",2],
+["träffas","to meet","(träffades, träffats)","v",2],
+["fin","nice, pretty","(-t, -a)","adj",2],
+["lägenhet","apartment, flat","(-en, -er, -erna)","n",2],
+["Kom in!","Come in!","","p",2],
+["precis","exactly","","o",2],
+["förlåt","I’m sorry, forgive me","","p",2],
+["förstå","understand","(förstår, förstod, förstått)","v",2],
+["webb","Internet","(-en)","n",2],
+["thai","Thai","","o",2],
+["artikel","article","(-n, artiklar, artiklarna)","n",2],
+["mat","food","(-en)","n",2],
+["kul","fun","","adj",2],
+["ska","will","","o",2],
+["detsamma","the same","","p",2],
+["Vi ses!","See you!","","p",2],
+["just det","exactly","","p",2],
+["Ha det så bra!","Be well!","","p",2],
+["Du med!","You too!","","p",2],
+["Hej då!","Good bye!","","p",2],
+["man","one","","o",2],
+["komplettera","complete","(-r, -de, -t)","v",2],
+["varför","why","","o",2],
+["presentera sig","introduce oneself","(-r, -de, -t)","v",2],
+["er","you","","o",2],
+["lista","list","(-n, -or, -orna)","n",2],
+["väska","bag","(-n, -or, -orna)","n",2],
+["folk","people","","o",2],
+["på stan","downtown, in the city","","p",2],
+["stad","city, town","(-en, städer, städerna)","n",2],
+["tja","well","","o",2],
+["mobiltelefon","cell phone, mobile phone","(-en, -er, -erna)","n",2],
+["tuggummipaket","pack of chewing gum","(-et, –, -en)","n",2],
+["paket","pack, packet","(-et, –, -en)","n",2],
+["tuggummi","chewing gum","(-t)","n",2],
+["läsplatta","e-reader","(-n, -or, -orna)","n",2],
+["kam","comb","(-men, -mar, -marna)","n",2],
+["ordbok","dictionary","(-en, ordböcker, ordböckerna)","n",2],
+["cerat","chapstick, lip balm","(-et, –, -en)","n",2],
+["mössa","hat","(-n, -or, -orna)","n",2],
+["suddgummi","eraser","(-t, -n, -na)","n",2],
+["Tack så mycket.","Thank you very much.","","p",2],
+["Det var så lite.","It was nothing.","","p",2],
+["bild","picture","(-en, -er, -erna)","n",2],
+["tro","think, believe","(tror, trodde, trott)","v",2],
+["diskutera","discuss","(-r, -de, -t)","v",2],
+["förslag","suggestion","(-et, –, -en)","n",2],
+["respons","response","(-en)","n",2],
+["kanske","maybe","","o",2],
+["absolut","absolutely","","o",2],
+["få","may, be allowed to","","v",2],
+["sak","thing","(-en, -er, -erna)","n",2],
+["bussbiljett","bus ticket","(-en, -er, -erna)","n",2],
+["läppglans","lip gloss","(-et)","n",2],
+["banan","banana","(-en, -er, -erna)","n",2],
+["en flaska vatten","a bottle of water","","p",2],
+["flaska","bottle","(-n, -or, -orna)","n",2],
+["läsk","soft drink, fizzy drink (ugs)","","n",2],
+["pengar","money","(-na)","n",2],
+["nyckel","key","(nyckeln, nycklar, nycklarna)","n",2],
+["tröja","sweater","(-n, -or, -orna)","n",2],
+["ett par skor","a pair of shoes","","p",2],
+["sko","shoe","(-n, -r, -rna)","n",2],
+["necessär","toiletry bag","(-en, -er, -erna)","n",2],
+["dator","computer","(-n, -er, -erna)","n",2],
+["pass","passport","(-et, –, -en)","n",2],
+["visa","visa","(-r, -de, -t)","v",2],
+["ny","new","(nytt, nya)","adj",2],
+["tavla","blackboard","(-n, -or, -orna)","n",2],
+["substantiv","noun","(-et, –, -en)","n",2],
+["singular","singular","","o",2],
+["obestämd form","indefinite form","","p",2],
+["obestämd","indefinite","(obestämt, obestämda)","adj",2],
+["utan","without","","o",2],
+["byta","change, exchange","(byter, bytte, bytt)","v",2],
+["halsduk","scarf","(-en, -ar, -arna)","n",2],
+["hund","dog","(-en, -ar, -arna)","n",2]
+];
+const VOCAB3 = [
+// ---------------- Kapitel 3 ----------------
+["räkna","count","(-r, -de, -t)","v",3],
+["siffra","digit, number","(-n, -or, -orna)","n",3],
+["plats","place","(-en, -er, -erna)","n",3],
+["ljud","sound","(-et, –, -en)","n",3],
+["bakre","back","","adj",3],
+["främre","front","","adj",3],
+["Kina","China","","o",3],
+["jämn","even","(-t, -a)","adj",3],
+["tal","number","(-et, –, -en)","n",3],
+["udda","odd","","adj",3],
+["baklänges","backwards","","o",3],
+["kasta tärning","roll dice","","p",3],
+["kasta","throw, roll","(-r, -de, -t)","v",3],
+["tärning","dice","(-en, -ar, -arna)","n",3],
+["öva","practice","(-r, -de, -t)","v",3],
+["plus","plus","","o",3],
+["minus","minus","","o",3],
+["gata","street","(-n, -or, -orna)","n",3],
+["nummer","number","(numret, –, numren)","n",3],
+["hur många","how many","","p",3],
+["telefonnummer","telephone number","(telefonnumret, –, telefonnumren)","n",3],
+["ringa","call","(-er, -de, -t)","v",3],
+["imorgon","tomorrow","","o",3],
+["När är du född?","When were you born?","","p",3],
+["när","when","","o",3],
+["född","born","","adj",3],
+["samma år som","same year as","","p",3],
+["lillasyster","little sister","(-n, småsystrar, småsystrarna)","n",3],
+["morfar","grandfather (maternal)","","n",3],
+["gammal","old","(-t, gamla)","adj",3],
+["ojojoj","oh, oh no","","o",3],
+["mycket","a lot","","o",3],
+["jamen","yes, but","","o",3],
+["faktiskt inte","actually not","","p",3],
+["jag fyller 83 i år","I turn 83 this year","","p",3],
+["fylla år","turn (age)","(-er, -de, -t)","v",3],
+["ungefär","about, approximately","","o",3],
+["hur mycket","how much","","p",3],
+["Hur mycket är klockan?","What time is it?","","p",3],
+["Hon/Den är…","It is …","","p",3],
+["klocka","watch, clock","(-n, -or, -orna)","n",3],
+["halv sju","six thirty","","p",3],
+["halv","half","(-t, -a)","adj",3],
+["över","over","","o",3],
+["kvart i","quarter to","","p",3],
+["kvart","quarter","(-en, -ar, -arna)","n",3],
+["prick (precis)","exactly","","p",3],
+["fem över halv","thirty-five past","","p",3],
+["kvart över","quarter past","","p",3],
+["fem i","five to","","p",3],
+["fem i halv","twenty-five past","","p",3],
+["sekund","second","(-en, -er, -erna)","n",3],
+["minut","minute","(-en, -er, -erna)","n",3],
+["halvtimme","half an hour","(-en, -ar, -arna)","n",3],
+["timme","hour","(-en, -ar, -arna)","n",3],
+["tid","time","(-en, -er, -erna)","n",3],
+["fika","coffee break","(-t)","n",3],
+["program","program","(-met, –, -men)","n",3],
+["konferens","conference","(-en, -er, -erna)","n",3],
+["självklart","obvious","","adj",3],
+["Kanon!","Great!","","p",3],
+["vilken tid","what time","","p",3],
+["börja","begin","(-r, -de, -t)","v",3],
+["hur dags","what time","","p",3],
+["äta","eat","(äter, åt, ätit)","v",3],
+["lunch","lunch","(-en, -er, -erna)","n",3],
+["fikapaus","coffee break","(-en, -er, -erna)","n",3],
+["sista","last, final","","adj",3],
+["sluta","end","(-r, -de, -t)","v",3],
+["vid fem","at five","","p",3],
+["aktivitet","activity","(-en, -er, -erna)","n",3],
+["vakna","wake up","(-r, -de, -t)","v",3],
+["stiga upp","get up","(stiger, steg, stigit)","v",3],
+["frukost","breakfast","(-en, -ar, -arna)","n",3],
+["ta","take","(tar, tog, tagit)","v",3],
+["taxi","taxi","(-n, taxibilar, taxibilarna)","n",3],
+["dansa","dance","(-r, -de, -t)","v",3],
+["väninna","friend (female)","(-n, -or, -orna)","n",3],
+["röka","smoke","(-er, -te, -t)","v",3],
+["promenera","walk","(-r, -de, -t)","v",3],
+["mejl","email","(-et, –, -n)","n",3],
+["städa","clean up","(-r, -de, -t)","v",3],
+["ta en tupplur","take a nap","(-en, -ar, -arna)","p",3],
+["laga mat","cook","(-r, -de, -t)","v",3],
+["middag","dinner","(-en, -ar, -arna)","n",3],
+["diska","wash the dishes","(-r, -de, -t)","v",3],
+["spela","play","(-r, -de, -t)","v",3],
+["gitarr","guitar","(-en, -er, -erna)","n",3],
+["radio","radio","(-n, radioapparater, radioapparaterna)","n",3],
+["teve","tv","(-n, teveapparater, teveapparaterna)","n",3],
+["vin","wine","(-et, -er, -erna)","n",3],
+["chatta","chat (online)","(-r, -de, -t)","v",3],
+["gå och lägga sig","go to bed","","p",3],
+["lägga","lie, lay down","(lägger, la/lade, lagt)","v",3],
+["somna","fall asleep","(-r, -de, -t)","v",3],
+["jämföra","compare","(jämför, -de, -t)","v",3],
+["kontrollera","control","(-r, -de, -t)","v",3],
+["aktiv","active","(-t, -a)","adj",3],
+["alltid","always","","o",3],
+["direkt","direct","","o",3],
+["buss","buss","(-en, -ar, -arna)","n",3],
+["danskurs","dance course","(-en, -er, -erna)","n",3],
+["mellan","in between","","o",3],
+["lindy hop","lindy hop","","o",3],
+["älska","to love","(-r, -de, -t)","v",3],
+["dans","dance","(-en, -er, -erna)","n",3],
+["efter","after","","o",3],
+["hungrig","hungry","(-t, -a)","adj",3],
+["förstås","of course","","p",3],
+["liten","small, little","(litet, lilla)","adj",3],
+["idag","today","","o",3],
+["stor","big","(-t, -a)","adj",3],
+["biff","steak","(-en, -ar, -arna)","n",3],
+["pommes frites","french fries","","o",3],
+["bearnaisesås","Bernaise sauce","(-en)","n",3],
+["sås","sauce","(-en)","n",3],
+["hem","home","","o",3],
+["nästan","almost","","o",3],
+["på eftermiddagen","in the afternoon","","p",3],
+["eftermiddag","afternoon","(-en, -ar, -arna)","n",3],
+["berätta","tell, relate","(-r, -de, -t)","v",3],
+["liv","life","(-et, –, -en)","n",3],
+["soffa","sofa","(-n, -or, -orna)","n",3],
+["piano","piano","(-t, -n, -na)","n",3],
+["present","gift","(-en, -er, -erna)","n",3],
+["favoritprogram","favorite show","(-met, –, -men)","n",3],
+["sedan","then, afterwards","","o",3],
+["musik","music","(-en)","n",3],
+["Tyskland","Germany","","o",3],
+["subjekt","subject","(-et, –, -en)","n",3],
+["under","under","","o",3],
+["reflexiva verb","reflexive verbs","","p",3],
+["bredvid","next to","","o",3],
+["roll","role","(-en, -er, -erna)","n",3],
+["på kvällen","in the evening","","p",3],
+["kväll","evening","(-en, -ar, -arna)","n",3],
+["skola","school","(-n, -or, -orna)","n",3],
+["bestämd form","definite form","","p",3],
+["bestämd","definite","(bestämt, bestämda)","adj",3],
+["båda","both","","o",3],
+["utanför","outside","","o",3],
+["klassrum","classroom","(-met, –, -men)","n",3],
+["älg","moose","(-en, -ar, -arna)","n",3],
+["åh","oh","","o",3],
+["sätta på","turn on, put on","(sätter, satte, satt)","v",3],
+["film","film","(-en, -er, -erna)","n",3],
+["God natt!","Good night!","","p",3],
+["Sov gott!","Sleep well!","","p",3],
+["sova","sleep","(sover, sov, sovit)","v",3],
+["köpcentrum","mall","(köpcentret, –, köpcentren)","n",3],
+["rakt fram","straight ahead","","p",3],
+["det ligger","it is located","","p",3],
+["höger sida","on the right hand side","","p",3],
+["höger","right","","o",3],
+["imperativ","imperative","","o",3],
+["tips","tip","(-et, –, tipsen)","n",3],
+["din","your","(ditt, dina)","adj",3],
+["ordföljd","word order","(-en)","n",3],
+["stund","moment","(-en, -er, -erna)","n",3],
+["glas","glass","(-et, –, -en)","n",3],
+["yoga","yoga","(-r, -de, -t)","v",3],
+["kopp","cup","(-en, -ar, -arna)","n",3],
+["örtte","herbal tea","(-t, -er, -erna)","n",3],
+["surfa på datorn","surf (the web)","(-r, -de, -t)","v",3],
+["studio","studio","(-n, -r, -rna)","n",3],
+["soppa","soup","(-n, -or, -orna)","n",3],
+["gym","gym","(-met, –, -men)","n",3],
+["träna","exercise","(-r, -de, -t)","v",3],
+["sallad","salad","(-en)","n",3],
+["mineralvatten","mineral water","(mineralvattnet)","n",3],
+["bar","bar","(-en, -er, -erna)","n",3],
+["champagne","champagne","(-n)","n",3],
+["vid","by","","o",3]
+];
+VOCAB.push.apply(VOCAB, VOCAB2);
+VOCAB.push.apply(VOCAB, VOCAB3);
+// ---------- state ----------
+const KINDS = {n:'noun', v:'verb', adj:'adjective', p:'phrase', o:'other'};
+const CHNAME = {0:'Classroom', 1:'Kapitel 1', 2:'Kapitel 2', 3:'Kapitel 3'};
+const STORE = 'svquiz_v1';
+const W = VOCAB.map((v,i) => ({s:v[0], e:v[1], f:v[2], k:v[3], ch:v[4], i:i}));
+let prog = {};
+try { prog = JSON.parse(localStorage.getItem(STORE) || '{}'); } catch(e){ prog = {}; }
+function saveProg(){ try { localStorage.setItem(STORE, JSON.stringify(prog)); } catch(e){} }
+function st(i){ return prog[i] || {s:0,r:0,w:0}; }
+
+const $ = id => document.getElementById(id);
+const $$ = sel => Array.from(document.querySelectorAll(sel));
+
+function isWeak(i){ const s = st(i); return s.w >= 2 && s.r < s.w; }
+function isKnown(i){ const s = st(i); return s.s >= 3 && s.r/s.s >= 0.75 && !isWeak(i); }
+function refreshStats(){
+  let seen=0, known=0, wk=0, right=0, tot=0;
+  for(const w of W){
+    const s = st(w.i);
+    if(s.s){ seen++; right += s.r; tot += s.s; if(isWeak(w.i)) wk++; else if(isKnown(w.i)) known++; }
+  }
+  $('stSeen').textContent = seen + '/' + W.length;
+  $('stKnown').textContent = known;
+  $('stWk').textContent = wk;
+  $('stAcc').textContent = tot ? Math.round(right/tot*100) + '%' : '–';
+}
+
+// ---------- selection helpers ----------
+function pickChips(id){ const el = $(id).querySelector('.chip.on'); return el ? el.dataset : null; }
+function chipGroup(id, attr){
+  $(id).addEventListener('click', e => {
+    const c = e.target.closest('.chip'); if(!c) return;
+    $$('#'+id+' .chip').forEach(x => x.classList.remove('on'));
+    c.classList.add('on');
+  });
+  return () => $(id).querySelector('.chip.on').getAttribute(attr);
+}
+
+function deckPool(){
+  const d = pickChips('decks').d;
+  if(d === 'weak') return W.filter(w => isWeak(w.i));
+  if(d === 'all') return W.slice();
+  return W.filter(w => w.ch === +d);
+}
+// weak words get pulled in much more often; unseen ones stay fresh
+function weightedPick(pool, used){
+  let total = 0; const ws = [];
+  for(const w of pool){
+    const s = st(w.i);
+    let wt = 1;
+    if(s.s) wt += (s.w * 2.2) - (s.r * 0.55);
+    if(isWeak(w.i)) wt += 3;
+    if(used.has(w.i)) wt *= 0.06;          // don't repeat within one run
+    wt = Math.max(0.05, wt);
+    ws.push(wt); total += wt;
+  }
+  let r = Math.random() * total;
+  for(let i=0;i<pool.length;i++){ r -= ws[i]; if(r <= 0) return pool[i]; }
+  return pool[pool.length-1];
+}
+function norm(t){
+  return (t||'').toLowerCase().trim()
+    .replace(/[.,!?;:«»"'’]/g,'')
+    .replace(/å/g,'a').replace(/ä/g,'a').replace(/ö/g,'o')
+    .replace(/\s+/g,' ')
+    .replace(/^(to|the|a|an)\s+/,'');
+}
+function accepts(typed, correct){
+  const t = norm(typed);
+  if(!t) return false;
+  const alts = String(correct).split(/[,/]|(?:\s+or\s+)/).map(x => norm(x)).filter(Boolean);
+  return alts.some(a => a === t || (a.length > 3 && t.length > 3 && (a.startsWith(t) || t.startsWith(a))));
+}
+
+// ---------- quiz session ----------
+let S = null;   // {pool, len, mode, dir, queue, pos, right, wrong, streak, cur, locked}
+const getMode = chipGroup('modes','data-m');
+const getDeck = chipGroup('decks','data-d');
+const getDir  = chipGroup('dirs','data-f');
+const getLen  = chipGroup('lens','data-l');
+
+function startQuiz(){
+  const pool = deckPool();
+  if(!pool.length){ alert('No words in this group yet — try “All” or “Weak only” after a few rounds.'); return; }
+  const len = Math.min(+getLen(), pool.length);
+  const used = new Set();
+  const queue = [];
+  for(let i=0;i<len;i++) queue.push(weightedPick(pool, used));
+  S = { pool, len, mode:getMode(), dir:getDir(), queue, pos:0, right:0, wrong:0,
+        streak:0, best:0, cur:null, locked:false, modeFor:null, missed:[] };
+  $('setup').classList.add('hidden');
+  $('weakCard').classList.add('hidden');
+  $('resultCard').classList.add('hidden');
+  $('quiz').classList.remove('hidden');
+  $('fc').classList.remove('hidden');
+  nextQuestion();
+}
+function endQuiz(){
+  const total = S.right + S.wrong;
+  const acc = total ? Math.round(S.right/total*100) : 0;
+  let wk = 0; for(const w of W) if(isWeak(w.i)) wk++;
+  $('rBig').textContent = S.right + ' / ' + total;
+  $('rSub').textContent = acc + '% correct  ·  ' + CHNAME[deckChip()] + '  ·  ' + modeName(S.mode);
+  $('rRight').textContent = S.right;
+  $('rAcc').textContent = acc + '%';
+  $('rBest').textContent = S.best;
+  $('rWk').textContent = wk;
+  const seen = new Set(), miss = [];
+  for(const w of S.missed){ if(!seen.has(w.i)){ seen.add(w.i); miss.push(w); } }
+  $('rMissLbl').style.display = miss.length ? 'block' : 'none';
+  $('rMiss').innerHTML = miss.length
+    ? miss.map(w => '<div><b>' + escapeHtml(w.s) + '</b> = ' + escapeHtml(w.e) +
+        (w.f ? ' <i>' + escapeHtml(w.f) + '</i>' : '') + '</div>').join('')
+    : '';
+  $('quiz').classList.add('hidden');
+  $('fc').classList.add('hidden');
+  $('resultCard').classList.remove('hidden');
+  $('resultCard').scrollIntoView({behavior:'smooth', block:'center'});
+}
+function deckChip(){ const el = $('decks').querySelector('.chip.on'); return el ? el.getAttribute('data-d') : 'all'; }
+function modeName(m){ return {choice:'multiple choice', type:'typing', flash:'flashcards',
+                              form:'word forms', mixed:'mixed'}[m] || m; }
+function quitQuiz(){
+  S = null;
+  $('quiz').classList.add('hidden');
+  $('fc').classList.add('hidden');
+  $('resultCard').classList.add('hidden');
+  $('setup').classList.remove('hidden');
+  refreshStats();
+}
+function nextQuestion(){
+  S.pos++;
+  if(S.pos > S.len){ endQuiz(); return; }
+  S.cur = S.queue[S.pos-1];
+  S.locked = false;
+  S.answerText = undefined; S.acceptTarget = undefined;   // no stale answers
+  let mode = S.mode;
+  if(mode === 'mixed') mode = ['type','form','flash'][Math.floor(Math.random()*3)];
+  // form mode needs a paradigm; fall back if the word has none
+  if(mode === 'form' && !S.cur.f) mode = 'type';
+  S.modeFor = mode;
+
+  const isFlash = (mode === 'flash');
+  $('fc').style.display = isFlash ? 'block' : 'none';
+  $('quiz').style.display = isFlash ? 'none' : 'block';
+  if(isFlash) return renderFlash();
+
+  $('fb').innerHTML = '';
+  $('btnNext').classList.add('hidden');
+  $('mcWrap').style.display = (mode === 'choice' || mode === 'form') ? 'block' : 'none';
+  $('typeWrap').style.display = (mode === 'type') ? 'block' : 'none';
+
+  const dir = (S.dir === 'both') ? (Math.random() < 0.5 ? 'sve' : 'eng') : S.dir;
+  S.askDir = dir;
+  $('qPos').textContent = S.pos + ' / ' + S.len;
+  $('streak').innerHTML = 'streak <b>' + S.streak + '</b>';
+  $('progressFill').style.width = ((S.pos-1)/S.len*100) + '%';
+
+  if(mode === 'form'){
+    $('qDir').textContent = 'Vilka former har ordet?';
+    $('qWord').textContent = S.cur.s;
+    $('qForm').textContent = S.cur.e;
+    $('qKind').textContent = KINDS[S.cur.k] || '';
+    $('qCh').textContent = CHNAME[S.cur.ch];
+    return renderFormOptions();
+  }
+
+  const swedish = (dir === 'sve');
+  $('qDir').textContent = swedish ? 'Svenska → English' : 'English → Svenska';
+  $('qWord').textContent = swedish ? S.cur.s : S.cur.e;
+  $('qForm').textContent = swedish && S.cur.f ? S.cur.f : '';
+  $('qKind').textContent = KINDS[S.cur.k] || '';
+  $('qCh').textContent = CHNAME[S.cur.ch];
+  $('typeIn').value = '';
+  // keep the on-screen keyboard off the Swedish-ness of the answer
+  $('typeIn').setAttribute('lang', swedish ? 'en' : 'sv');
+
+  if(mode === 'type'){ renderTypePrompt(swedish); setTimeout(()=>{ $('typeIn').focus(); }, 30); }
+  else renderChoiceOptions(swedish);
+}
+
+function renderTypePrompt(swedish){
+  const need = swedish ? S.cur.e : S.cur.s;
+  $('typeIn').placeholder = swedish ? 'type it in English…' : 'skriv på svenska…';
+  S.acceptTarget = need;
+}
+function renderChoiceOptions(swedish){
+  const target = swedish ? S.cur.e : S.cur.s;
+  const opts = [S.cur];
+  const used = new Set([S.cur.i]);
+  while(opts.length < 4){
+    const d = W[Math.floor(Math.random()*W.length)];
+    if(used.has(d.i)) continue;
+    const alt = swedish ? d.e : d.s;
+    if(alt === target) continue;
+    used.add(d.i); opts.push(d);
+  }
+  opts.sort(() => Math.random()-0.5);
+  S.opts = opts; S.answerText = target;
+  const wrap = $('opts'); wrap.innerHTML = '';
+  opts.forEach(o => {
+    const d = document.createElement('div');
+    d.className = 'opt';
+    d.textContent = swedish ? o.e : o.s;
+    d.addEventListener('click', () => answerChoice(d, swedish ? o.e : o.s));
+    wrap.appendChild(d);
+  });
+}
+function renderFormOptions(){
+  const target = S.cur.f;
+  const opts = [S.cur];
+  const used = new Set([S.cur.i]);
+  while(opts.length < 4){
+    const d = W[Math.floor(Math.random()*W.length)];
+    if(used.has(d.i) || !d.f || d.f === target) continue;
+    used.add(d.i); opts.push(d);
+  }
+  opts.sort(() => Math.random()-0.5);
+  S.answerText = target;                     // clear the previous question's answer
+  const wrap = $('opts'); wrap.innerHTML = '';
+  opts.forEach(o => {
+    const d = document.createElement('div');
+    d.className = 'opt';
+    d.textContent = o.f;
+    d.addEventListener('click', () => answerChoice(d, target));
+    wrap.appendChild(d);
+  });
+}
+
+function answerChoice(el, picked){
+  if(S.locked) return;
+  S.locked = true;
+  const ok = accepts(picked, S.answerText !== undefined ? S.answerText : S.cur.f);
+  const kids = Array.from($('opts').children);
+  kids.forEach(k => { if(k.textContent === (S.answerText !== undefined ? S.answerText : S.cur.f)) k.classList.add('right'); });
+  if(!ok) el.classList.add('wrong'); else el.classList.add('right');
+  kids.forEach(k => { if(k !== el && !k.classList.contains('right')) k.classList.add('dim'); });
+  finishQuestion(ok);
+}
+function submitType(){
+  if(S.locked) return;
+  const typed = $('typeIn').value;
+  if(!typed.trim()) return;
+  S.locked = true;
+  const ok = accepts(typed, S.acceptTarget);
+  finishQuestion(ok, typed);
+}
+function finishQuestion(ok, typed){
+  const c = S.cur;
+  const rec = st(c.i); rec.s++;
+  if(ok){ rec.r++; S.right++; S.streak++; S.best = Math.max(S.best, S.streak); }
+  else  { rec.w++; S.wrong++; S.streak = 0; S.missed.push(c); }
+  prog[c.i] = rec; saveProg();
+
+  const fb = $('fb');
+  if(ok){
+    fb.innerHTML = '<span class="good">✓ rätt!</span>';
+  } else {
+    const parts = [];
+    if(typed) parts.push('you wrote <span class="ans">' + escapeHtml(typed) + '</span>');
+    fb.innerHTML = '<span class="bad">✗ fel</span> — ' +
+      '<span class="ans">' + escapeHtml(c.s) + '</span> = ' + escapeHtml(c.e) +
+      (c.f ? ' <span style="color:#9a92ad">' + escapeHtml(c.f) + '</span>' : '');
+  }
+  $('streak').innerHTML = 'streak <b>' + S.streak + '</b>';
+  $('progressFill').style.width = (S.pos/S.len*100) + '%';
+  $('btnNext').classList.remove('hidden');
+  $('btnNext').focus();
+  refreshStats();
+}
+function escapeHtml(t){ return String(t).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+// ---------- flashcards ----------
+let fcFlipped = false;
+function renderFlash(){
+  fcFlipped = false;
+  $('fcPos').textContent = S.pos + ' / ' + S.len;
+  $('progressFill2').style.width = ((S.pos-1)/S.len*100) + '%';
+  $('fcFront').textContent = S.cur.s;
+  $('fcForm').textContent = S.cur.f || '';
+  $('fcBack').textContent = S.cur.e;
+  $('fcBack').style.display = 'none';
+  $('fcFront').style.display = 'block';
+  $('fcBtns').classList.add('hidden');
+  $('tapHint').style.display = 'block';
+  $('tapHint').textContent = 'tap the card (or press Space) to flip';
+}
+function flipCard(){
+  if(!S || fcFlipped) return;
+  fcFlipped = true;
+  $('fcFront').style.display = 'none';
+  $('fcBack').style.display = 'block';
+  $('fcBtns').classList.remove('hidden');
+  $('tapHint').style.display = 'none';
+}
+function gradeCard(ok){
+  const c = S.cur;
+  const rec = st(c.i); rec.s++;
+  if(ok){ rec.r++; S.right++; S.streak++; S.best = Math.max(S.best,S.streak); }
+  else  { rec.w++; S.wrong++; S.streak = 0; S.missed.push(c); }
+  prog[c.i] = rec; saveProg();
+  refreshStats();
+  nextQuestion();
+}
+
+// ---------- weak list ----------
+function showWeak(){
+  const rows = W.filter(w => isWeak(w.i))
+    .sort((a,b) => (st(b.i).w - st(b.i).r) - (st(a.i).w - st(a.i).r));
+  const el = $('weakList');
+  if(!rows.length){ el.innerHTML = '<div style="column-span:none">Nothing marked weak yet — do a few rounds first!</div>'; }
+  else {
+    el.innerHTML = rows.map(w => {
+      const s = st(w.i);
+      return '<div><b>' + escapeHtml(w.s) + '</b> <span>' + escapeHtml(w.e) +
+             (w.f ? ' <i>' + escapeHtml(w.f) + '</i>' : '') +
+             ' · <span class="warn">' + s.r + '/' + (s.r+s.w) + '</span></span></div>';
+    }).join('');
+  }
+  $('weakCard').classList.remove('hidden');
+  $('weakCard').scrollIntoView({behavior:'smooth'});
+}
+
+// ---------- wiring ----------
+$('btnStart').addEventListener('click', startQuiz);
+$('btnQuit').addEventListener('click', quitQuiz);
+$('btnQuit2').addEventListener('click', quitQuiz);
+$('btnNext').addEventListener('click', nextQuestion);
+$('btnWeak').addEventListener('click', showWeak);
+$('btnWeakClose').addEventListener('click', () => $('weakCard').classList.add('hidden'));
+$('btnAgain').addEventListener('click', startQuiz);
+$('btnHome').addEventListener('click', () => {
+  S = null;
+  $('resultCard').classList.add('hidden');
+  $('weakCard').classList.add('hidden');
+  $('setup').classList.remove('hidden');
+  refreshStats();
+});
+$('btnWeak2').addEventListener('click', showWeak);
+$('btnReset').addEventListener('click', () => {
+  if(confirm('Forget all saved progress?')){ prog = {}; saveProg(); refreshStats(); }
+});
+$('fc').addEventListener('click', e => { if(!e.target.closest('button')) flipCard(); });
+$('fcNo').addEventListener('click', () => gradeCard(false));
+$('fcYes').addEventListener('click', () => gradeCard(true));
+$('typeIn').addEventListener('keydown', e => {
+  if(e.key === 'Enter'){ e.preventDefault(); if(S && !S.locked) submitType(); else nextQuestion(); }
+});
+
+document.addEventListener('keydown', e => {
+  if(!S) return;
+  if(S.modeFor === 'flash'){
+    if(!fcFlipped){
+      if(e.key === ' ' || e.key === 'Enter'){ e.preventDefault(); flipCard(); }
+      return;
+    }
+    if(e.key === '1' || e.key === 'ArrowLeft'){  e.preventDefault(); gradeCard(false); }
+    else if(e.key === '2' || e.key === 'ArrowRight'){ e.preventDefault(); gradeCard(true); }
+    return;
+  }
+  if(document.activeElement === $('typeIn')) return;
+  if(!S.locked && (S.modeFor === 'choice' || S.modeFor === 'form') && ['1','2','3','4'].includes(e.key)){
+    const k = $('opts').children[+e.key - 1];
+    if(k) k.click();
+  }
+  if(S.locked && e.key === 'Enter'){ e.preventDefault(); nextQuestion(); }
+});
+
+refreshStats();
+console.log('vocab loaded:', W.length, 'words');
+
+</script>
+</body>
+</html>
